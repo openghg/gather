@@ -20,6 +20,7 @@ import pandas as pd
 from collections import defaultdict
 import math
 import argparse
+import numpy as np
 from pathlib import Path
 
 parser = argparse.ArgumentParser()
@@ -32,11 +33,26 @@ output_filepath = f"{str(filepath.stem)}_parsed.json"
 site_data = pd.read_csv(filepath)
 
 
-def nan_or_not(data):
-    if math.isnan(data):
+def date_or_not(date):
+    """Functional but pretty limited"""
+    try:
+        d = pd.Timestamp(date)
+        if pd.isnull(d):
+            return "NA"
+
+        return date
+    except ValueError:
         return "NA"
-    else:
-        return round(data, 3)
+
+
+def nan_or_not(data):
+    try:
+        if math.isnan(data):
+            return "NA"
+        else:
+            return round(data, 3)
+    except TypeError as e:
+        print(data, e)
 
 
 site_dict = defaultdict(dict)
@@ -50,9 +66,9 @@ for index, row in site_data.iterrows():
     site_dict[node_name]["longitude"] = round(row["lng"], 5)
     site_dict[node_name]["magl"] = nan_or_not(row["height_above_ground"])
     site_dict[node_name]["masl"] = nan_or_not(row["height_above_sea"])
-    site_dict[node_name]["deployed"] = row["deployed"]
+    site_dict[node_name]["deployed"] = date_or_not(row["deployed"])
     site_dict[node_name]["node_folder_id"] = row["node_folder_id"]
-    
+
 
 with open(output_filepath, "w") as f:
     json.dump(site_dict, f, sort_keys=True, indent=4)
