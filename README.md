@@ -70,6 +70,15 @@ Processing: 157_GLASGOWS12002.csv: 100%|█████████████�
 We've now process all the data we've retrieved from the BEACO2N site and the data is stored in the OpenGHG object store. The next step is to 
 export it to a format the dashboard can read.
 
-### Export to dashboard
+### Export data
 
+Now we retrieve the data in a format that [the dashboard](https://github.com/openghg/dashboard) can read. We do this using the `retrieve_export.py` script. To use this script we use the `glasgow_nodes_parsed.json` file we created above, a list of the species we want from the data and an output filename.
 
+``` bash
+$ python retrieve_export.py glasgow_nodes_parsed.json co2 co pm --out glasgow_data.json
+```
+
+This then searches the object store for the sites given in `glasgow_nodes_parsed.json`, retrieves the data, processes it to a format
+the dashboard can read and then exports it to a JSON file called `glasgow_data.json`.
+
+The files `glasgow_nodes_parsed.json` and `glasgow_data.json` can then be placed in the dashboard [`data` directory](https://github.com/openghg/dashboard/tree/main/src/data). For updating the dashboard to use the new site data see the [dashboard README](https://github.com/openghg/dashboard/blob/main/README.md).
