@@ -12,6 +12,8 @@ import json
 from pathlib import Path
 from typing import Dict, Union
 
+__all__ = ["process_beaco2n"]
+
 
 pathType = Union[str, Path]
 

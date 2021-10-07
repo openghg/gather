@@ -1,19 +1,27 @@
 This repo contains scripts we use to scrape (with permission) data from different project's websites.
 
-## BEACO2N
 
-### Get site metadata
+
+# BEACO2N
+
+All BEACO2N data is provided by the [BEACO2N project](http://beacon.berkeley.edu/) at the University of Berkeley. Please make sure you get their permission before using any
+of the scraping tools provided in this repository.
+
+Below you can choose to either use the pipeline script which automates the download, processing and export of the data or perform each step yourself for greater control over the process.
+For both steps you'll first need to retrieve the site metadata and optionally customise it to only include the sites you're interested in.
+
+## Get site metadata
 
 To retrieve BEACO2N data we first need to download the metadata file available on their website.
 Get this from the link at the bottom of [http://beacon.berkeley.edu/metadata/](http://beacon.berkeley.edu/metadata/)
 under "BEACO2N Locations". This should give you a file called `get_latest_nodes.csv`.
 
-If you want to retrieve data for every site you can take this file and pass it to `extract_site_data.py`. 
+If you want to retrieve data for every site you can take this file and pass it to `metadata.py`. 
 
 Usage:
 
 ``` bash
-$ python extract_site_data.py get_latest_nodes.csv
+$ python metadata.py get_latest_nodes.csv
 ```
 
 This will create a file called `get_latest_nodes_parsed.json` which contains just the information we need to retrieve
@@ -24,15 +32,28 @@ steps above.
 
 > **_NOTE:_**  Remember to leave the headers if modifying the csv.
 
+## Pipeline
+
+The process of retrieving, processing and exporting the BEACO2N data can be performed in a single step with the `run_pipeline.py` script. We use this pipeline to perform automated updates of the BEACO2N data on the [OpenGHG data dashboard](https://openghg.github.io/dashboard/).
+
+With the site metadata `JSON` file to hand you can run
+
+``` bash
+$ python run_pipeline.py get_latest_nodes_parsed.json
+```
+
+## Separate stages
+
+To give you greater control over the process each of the scripts in the `beaco2n/beaco2n/` directory can be used to do each stage of the process separately. Each of the steps below expects the user to be in that `beaco2n/beaco2n/` directory. We also expect you to have followed the steps in the `Get site metadata` step above.
 
 ### Retrieve data
 
-After creating the `json` file above you're ready to retrieve the data. This is done using the `get_data.py` file.
+After creating the metadata `JSON` file above (see `Get site metadata`) you're ready to retrieve the data. This is done using the `scraper.py` file.
 Say we removed all sites except for those in Glasgow and created a `sites_glasgow_parsed.json` in the step above, we now
 run
 
 ``` bash
-$ python get_data.py sites_glasgow_parsed.json
+$ python scraper.py sites_glasgow_parsed.json
 ```
 
 This will download the data from each of those sites from the date it was deployed to the current date.
@@ -46,7 +67,7 @@ Now we have the data we can process it using OpenGHG, we just need the path to t
 the first step. Then we can do
 
 ``` bash
-$ python process_beaco2n.py data/ glasgow_nodes_parsed.json 
+$ python process.py data/ glasgow_nodes_parsed.json 
 ```
 
 And you should see something like

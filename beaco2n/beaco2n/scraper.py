@@ -24,9 +24,13 @@ from tqdm import tqdm
 import json
 import argparse
 from pathlib import Path
+from typing import Dict, Union
 
+__all__ = ["scrape_data"]
 
-def download_data(url: str) -> bytes:
+pathType = Union[str, Path]
+
+def _download_data(url: str) -> bytes:
     """Download the data at the given URL. This function tries to be polite
     and tries not to hammer the remote server with requests.
 
@@ -64,7 +68,7 @@ def download_data(url: str) -> bytes:
     return data
 
 
-def process_sites(metadata_filepath: str) -> None:
+def scrape_data(metadata_filepath: pathType, output_folder: pathType = None, pipeline: bool = False) -> None:
     """Download data from the BEACO2N website for sites given in the metadata file
 
     Args:
@@ -97,10 +101,15 @@ def process_sites(metadata_filepath: str) -> None:
 
         print(f"\nGetting: {url}")
     
-        data = download_data(url=url)
+        data = _download_data(url=url)
         filename = f"{node_number}_{node_name}.csv"
 
-        with open(filename, "wb") as f:
+        if output_folder is not None:
+            output_filepath = Path(output_folder).joinpath(filename)
+        else:
+            output_filepath = filename
+
+        with open(output_filepath, "wb") as f:
             f.write(data)
 
         time.sleep(5)

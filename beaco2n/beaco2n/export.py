@@ -29,6 +29,7 @@ import json
 from pathlib import Path
 from typing import Dict, List, Union
 
+__all__ = ["retrieve_export"]
 
 def retrieve_export(
     json_path: Union[str, Path], selected_vars: List[str], output_filename: str = None
