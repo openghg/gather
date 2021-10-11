@@ -29,25 +29,23 @@ import json
 from pathlib import Path
 from typing import Dict, List, Union
 
-__all__ = ["retrieve_export"]
+__all__ = ["export", "export_pipeline"]
 
-def retrieve_export(
-    json_path: Union[str, Path], selected_vars: List[str], output_filename: str = None
-) -> None:
-    """Retrieve data from the object store and export it to JSON.
+pathType = Union[str, Path]
+
+
+def export_pipeline(metadata: Dict, selected_vars: List[str], output_filepath: pathType) -> None:
+    """Retrieve data from the object store and export it to JSON. Pipeline version that
+    expects site metadata as a dict instead of a filepath to JSON.
 
     Args:
-        json_path: Path to site JSON
+        metadata: Site metadata
         selected_vars: Variables to extract from data such as speices names, e.g. ["co2", "co", "pm"]
-        output_filename: Filename for writing data, if not given data will be written to dashboard_data.json
+        output_filepath: Filepath for writing data, if not given data will be written to dashboard_data.json
     Returns:
         None
     """
-    json_path = Path(json_path)
-    site_data = json.loads(json_path.read_text())
-
-    site_names = list(site_data.keys())
-
+    site_names = list(metadata.keys())
     results = search(site=site_names)
 
     if not results:
@@ -57,12 +55,25 @@ def retrieve_export(
 
     data = results.retrieve_all()
 
-    if output_filename is None:
-        output_filename = "dashboard_data.json"
+    to_dashboard(data=data, selected_vars=selected_vars, filename=output_filepath)
 
-    to_dashboard(data=data, selected_vars=selected_vars, filename=output_filename)
+    print(f"Data written to {output_filepath}")
 
-    print(f"Data written to {output_filename}")
+
+def export(json_path: Union[str, Path], selected_vars: List[str], output_filepath: str) -> None:
+    """Retrieve data from the object store and export it to JSON.
+
+    Args:
+        json_path: Path to site JSON
+        selected_vars: Variables to extract from data such as speices names, e.g. ["co2", "co", "pm"]
+        output_filepath: Filepath for writing data, if not given data will be written to dashboard_data.json
+    Returns:
+        None
+    """
+    json_path = Path(json_path)
+    site_data = json.loads(json_path.read_text())
+
+    export_pipeline(metadata=site_data, selected_vars=selected_vars, output_filepath=output_filepath)
 
 
 if __name__ == "__main__":

@@ -26,9 +26,35 @@ import argparse
 from pathlib import Path
 from typing import Dict, Union
 
-__all__ = ["scrape_data"]
+__all__ = ["scrape_data", "scrape_data_pipeline"]
 
 pathType = Union[str, Path]
+
+
+# def download(url, filename):
+    # """ From https://stackoverflow.com/a/63831344/
+
+    # """
+#     import functools
+#     import pathlib
+#     import shutil
+#     import requests
+#     from tqdm.auto import tqdm
+
+#     r = requests.get(url, stream=True, allow_redirects=True)
+#     if r.status_code != 200:
+#         r.raise_for_status()  # Will only raise for 4xx codes, so...
+#         raise RuntimeError(f"Request to {url} returned status code {r.status_code}")
+#     file_size = int(r.headers.get("Content-Length", 0))
+#     path = pathlib.Path(filename).expanduser().resolve()
+#     path.parent.mkdir(parents=True, exist_ok=True)
+#     desc = "(Unknown total file size)" if file_size == 0 else ""
+#     r.raw.read = functools.partial(r.raw.read, decode_content=True)  # Decompress if needed
+#     with tqdm.wrapattr(r.raw, "read", total=file_size, desc=desc) as r_raw:
+#         with path.open("wb") as f:
+#             shutil.copyfileobj(r_raw, f)
+#     return path
+
 
 def _download_data(url: str) -> bytes:
     """Download the data at the given URL. This function tries to be polite
@@ -68,25 +94,37 @@ def _download_data(url: str) -> bytes:
     return data
 
 
-def scrape_data(metadata_filepath: pathType, output_folder: pathType = None, pipeline: bool = False) -> None:
+def scrape_data(metadata_filepath: pathType, output_directory: pathType = None) -> None:
     """Download data from the BEACO2N website for sites given in the metadata file
 
     Args:
         metadata_filepath: Path to metadata file, this must contain the site codes
+        output_directory: Folder to write data out
     Returns:
         None
     """
     with open(metadata_filepath, "r") as f:
         site_metadata = json.load(f)
 
-    start_date = start_date.replace(" ", "%20")
+    scrape_data_pipeline(metadata=site_metadata, output_directory=output_directory, pipeline=pipeline)
 
+
+def scrape_data_pipeline(metadata: Dict, output_directory: pathType = None) -> None:
+    """Download data from the BEACO2N website. This version expects a dictionary of metadata instead
+    of the path to the metadata JSON
+
+    Args:
+        metadata: Metadata read from JSON
+        output_directory: Folder to write data out
+    Returns:
+        None
+    """
     # This is just the current datetime in ISO format to the nearest second
     end_date = pd.Timestamp.now().round("1s").isoformat(" ").replace(" ", "%20")
 
     # tqdm here just decorates the dictionary so we can track
     # the iteration process for the progress bar
-    site_metadata_pbar = tqdm(site_metadata.items())
+    site_metadata_pbar = tqdm(metadata.items())
 
     for node_name, data in site_metadata_pbar:
         site_metadata_pbar.set_description(f"Getting data for {node_name}")
@@ -99,13 +137,13 @@ def scrape_data(metadata_filepath: pathType, output_folder: pathType = None, pip
 
         url = f"http://beacon.berkeley.edu/node/{node_number}/measurements/csv?name={name_for_url}&interval=60&start={start_date}&end={end_date}"
 
-        print(f"\nGetting: {url}")
-    
+        print(f"\nGetting: {url}\n")
+
         data = _download_data(url=url)
         filename = f"{node_number}_{node_name}.csv"
 
-        if output_folder is not None:
-            output_filepath = Path(output_folder).joinpath(filename)
+        if output_directory is not None:
+            output_filepath = Path(output_directory).joinpath(filename)
         else:
             output_filepath = filename
 

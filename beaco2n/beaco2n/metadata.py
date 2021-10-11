@@ -59,7 +59,7 @@ def parse_metadata(metadata_filepath: Union[str, Path], pipeline: bool = False) 
     Returns:
         dict or None
     """
-    site_data = pd.read_csv(filepath)
+    site_data = pd.read_csv(metadata_filepath)
 
     site_dict = defaultdict(dict)
 
