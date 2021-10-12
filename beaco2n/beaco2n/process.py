@@ -46,7 +46,8 @@ def process_beaco2n_pipeline(
         site_name = split[1]
 
         # Lookup the site metadata
-        site_metadata = metadata[site_name]
+        network = "beaco2n"
+        site_metadata = metadata[network][site_name]
 
         site_id_meta = str(site_metadata["id"])
         inlet = site_metadata["magl"]
@@ -60,7 +61,7 @@ def process_beaco2n_pipeline(
                 filepath=filepath,
                 data_type="BEACO2N",
                 site=site_name,
-                network="BEACO2N",
+                network=network,
                 inlet=inlet,
                 instrument=instrument,
             )

@@ -26,6 +26,9 @@ import argparse
 from pathlib import Path
 from typing import Dict, Union
 
+# Local utils
+from utils.download import download
+
 __all__ = ["scrape_data", "scrape_data_pipeline"]
 
 pathType = Union[str, Path]
@@ -56,42 +59,42 @@ pathType = Union[str, Path]
 #     return path
 
 
-def _download_data(url: str) -> bytes:
-    """Download the data at the given URL. This function tries to be polite
-    and tries not to hammer the remote server with requests.
+# def _download_data(url: str) -> bytes:
+#     """Download the data at the given URL. This function tries to be polite
+#     and tries not to hammer the remote server with requests.
 
-    Args:
-        url: URL to csv file
-    Returns:
-        bytes: Returned content from http request
-    """
-    # If we get any of these codes we'll try again
-    retriable_status_codes = [
-        requests.codes.internal_server_error,
-        requests.codes.bad_gateway,
-        requests.codes.service_unavailable,
-        requests.codes.gateway_timeout,
-        requests.codes.too_many_requests,
-        requests.codes.request_timeout,
-    ]
+#     Args:
+#         url: URL to csv file
+#     Returns:
+#         bytes: Returned content from http request
+#     """
+#     # If we get any of these codes we'll try again
+#     retriable_status_codes = [
+#         requests.codes.internal_server_error,
+#         requests.codes.bad_gateway,
+#         requests.codes.service_unavailable,
+#         requests.codes.gateway_timeout,
+#         requests.codes.too_many_requests,
+#         requests.codes.request_timeout,
+#     ]
 
-    retry_strategy = Retry(
-        total=3,
-        status_forcelist=retriable_status_codes,
-        allowed_methods=["HEAD", "GET", "OPTIONS"],
-        backoff_factor=1,
-    )
+#     retry_strategy = Retry(
+#         total=3,
+#         status_forcelist=retriable_status_codes,
+#         allowed_methods=["HEAD", "GET", "OPTIONS"],
+#         backoff_factor=1,
+#     )
 
-    adapter = HTTPAdapter(max_retries=retry_strategy)
+#     adapter = HTTPAdapter(max_retries=retry_strategy)
 
-    http = requests.Session()
-    http.mount("https://", adapter)
-    http.mount("http://", adapter)
+#     http = requests.Session()
+#     http.mount("https://", adapter)
+#     http.mount("http://", adapter)
 
-    timeout = 20  # seconds
-    data = http.get(url, timeout=timeout).content
+#     timeout = 20  # seconds
+#     data = http.get(url, timeout=timeout).content
 
-    return data
+#     return data
 
 
 def scrape_data(metadata_filepath: pathType, output_directory: pathType = None) -> None:
@@ -139,7 +142,7 @@ def scrape_data_pipeline(metadata: Dict, output_directory: pathType = None) -> N
 
         print(f"\nGetting: {url}\n")
 
-        data = _download_data(url=url)
+        data = download(url=url)
         filename = f"{node_number}_{node_name}.csv"
 
         if output_directory is not None:
@@ -150,7 +153,7 @@ def scrape_data_pipeline(metadata: Dict, output_directory: pathType = None) -> N
         with open(output_filepath, "wb") as f:
             f.write(data)
 
-        time.sleep(5)
+        time.sleep(2)
 
 
 if __name__ == "__main__":

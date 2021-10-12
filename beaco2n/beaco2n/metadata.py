@@ -15,6 +15,7 @@ Or for other files with the same schema
 $ python extract_site_data.py <filepath_to_csv>
 
 """
+from addict import Dict as aDict
 import json
 import pandas as pd
 from collections import defaultdict
@@ -24,32 +25,12 @@ import numpy as np
 from pathlib import Path
 from typing import Dict, Union
 
+from utils.checks import is_nan, is_date
+
 __all__ = ["parse_metadata"]
 
 
-def _date_or_not(date: str) -> str:
-    """Functional but pretty limited"""
-    try:
-        d = pd.Timestamp(date)
-        if pd.isnull(d):
-            return "NA"
-
-        return date
-    except ValueError:
-        return "NA"
-
-
-def _nan_or_not(data: Union[int, float]) -> Union[str, float, int]:
-    try:
-        if math.isnan(data):
-            return "NA"
-        else:
-            return round(data, 3)
-    except TypeError as e:
-        print(data, e)
-
-
-def parse_metadata(metadata_filepath: Union[str, Path], pipeline: bool = False) -> Union[Dict, None]:
+def parse_metadata(metadata_filepath: Union[str, Path], pipeline: bool = False) -> Dict:
     """Parse the metadata file retreived from the BEACO2N site
 
     Args:
@@ -57,31 +38,38 @@ def parse_metadata(metadata_filepath: Union[str, Path], pipeline: bool = False) 
         pipeline: Are we running as part of the pipeline? If True
         return the parsed site information dictionary.
     Returns:
-        dict or None
+        dict: Dictionary of site metadata
     """
+    metadata_filepath = Path(metadata_filepath).resolve()
     site_data = pd.read_csv(metadata_filepath)
 
-    site_dict = defaultdict(dict)
+    network = "beaco2n"
+    metadata = aDict()
+    site_metadata = metadata[network]
 
     for index, row in site_data.iterrows():
         site_name = row["node_name_long"].lower().replace(" ", "")
-        node_data = site_dict[site_name]
+        site_data = site_metadata[site_name]
 
-        node_data["long_name"] = row["node_name_long"]
-        node_data["id"] = row["id"]
-        node_data["latitude"] = round(row["lat"], 5)
-        node_data["longitude"] = round(row["lng"], 5)
-        node_data["magl"] = _nan_or_not(row["height_above_ground"])
-        node_data["masl"] = _nan_or_not(row["height_above_sea"])
-        node_data["deployed"] = _date_or_not(row["deployed"])
-        node_data["node_folder_id"] = row["node_folder_id"]
+        site_data["long_name"] = row["node_name_long"]
+        site_data["id"] = row["id"]
+        site_data["latitude"] = round(row["lat"], 5)
+        site_data["longitude"] = round(row["lng"], 5)
+        site_data["magl"] = is_nan(row["height_above_ground"])
+        site_data["masl"] = is_nan(row["height_above_sea"])
+        site_data["deployed"] = is_date(row["deployed"])
+        site_data["node_folder_id"] = row["node_folder_id"]
 
-    if pipeline:
-        return site_dict
-    else:
-        output_filepath = f"{str(filepath.stem)}_parsed.json"
+    # Convert to a normal dict
+    metadata = metadata.to_dict()
+
+    if not pipeline:
+        output_filepath = f"{str(metadata_filepath.stem)}_parsed.json"
+        print(f"\nMetadata written to ./{output_filepath}")
         with open(output_filepath, "w") as f:
-            json.dump(site_dict, f, sort_keys=True, indent=4)
+            json.dump(metadata, f, sort_keys=True, indent=4)
+
+    return metadata
 
 
 if __name__ == "__main__":

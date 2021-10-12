@@ -5,16 +5,41 @@ If you just want to run a single state see the scripts in the beaco2n/ directory
 """
 import argparse
 from pathlib import Path
-from typing import List, Union
+import json
 from pandas import Timestamp, Timedelta
 from tempfile import TemporaryDirectory
+from typing import Dict, List, Union
 
 from beaco2n.metadata import parse_metadata
 from beaco2n.scraper import scrape_data_pipeline
 from beaco2n.process import process_beaco2n_pipeline
 from beaco2n.export import export_pipeline
+from copy import deepcopy
 
 pathType = Union[str, Path]
+
+
+def combine(metadata: Dict, data: Dict) -> Dict:
+    """Combine metadata and data, making sure there is data for each site
+
+    Args:
+        metadata: Dictionary of metadata
+        data: Dictionary of JSONified data
+    Returns:
+        dict: Copy of data dictionary with extra metadata
+    """
+    data_copy = deepcopy(data)
+
+    for network, network_data in data_copy.items():
+        for species, species_data in network_data.items():
+            for site, siteData in species_data.items():
+                data_metadata = siteData["metadata"]
+                site_metadata = metadata[network][site]
+
+                to_update = {k: v for k, v in site_metadata.items() if k not in data_metadata}
+                data_metadata.update(to_update)
+
+    return data_copy
 
 
 def pipeline(
@@ -37,7 +62,7 @@ def pipeline(
 
     # Check to see if we've downloaded the data within the last 6 hours
     scrape_log = Path("scrape_log.txt")
-    
+
     scrape_complete = False
     if scrape_log.exists():
         scrape_time_str = scrape_log.read_text()
@@ -59,11 +84,19 @@ def pipeline(
     results = process_beaco2n_pipeline(data_path=download_dir, metadata=metadata)
 
     # Now we can export the processed data in a format expected by the dashboard
-    export_pipeline(metadata=metadata, selected_vars=selected_vars, output_filepath=export_filepath)
+    json_data = export_pipeline(metadata=metadata, selected_vars=selected_vars)
+
+    # Now combine the data and metadata so we have everything in one place
+    combined_data = combine(metadata=metadata, data=json_data)
+
+    with open(export_filepath, "w") as f:
+        json.dump(combined_data, f)
+
+    print(f"\nData written to {export_filepath}")
 
     try:
         tmpdir.cleanup()
-    except AttributeError:
+    except (NameError, AttributeError):
         pass
 
 
@@ -80,9 +113,9 @@ if __name__ == "__main__":
 
     Example:
 
-    $ python run_pipeline.py glasgow_metadata.json co2 glasgow_data.json --dir
+    $ python run_pipeline.py glasgow_metadata.json co2 glasgow_data.json
 
-    This downloads the scraped data to a temporary directroy and exports only the CO2 measurements to a 
+    This downloads the scraped data to a temporary directory and exports only the CO2 measurements to a 
     file called dashboard_data_<timestamp>.json
 
     $ python run_pipeline.py glasgow_metadata.json co2 glasgow_data.json --dir download/
