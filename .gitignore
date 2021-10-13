@@ -96,6 +96,6 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# Ignore all CSV files as likely to be data
+# Ignore all CSV/zip files as likely to be data
 *.csv*
 *.zip*

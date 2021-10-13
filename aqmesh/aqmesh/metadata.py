@@ -8,8 +8,9 @@ from typing import Dict, Union
 # Local utils
 from utils.checks import is_date
 
+__all__ = ["parse_metadata"]
 
-def parse_metadata(filepath: Union[str, Path], pipeline: bool = False) -> Dict:
+def parse_metadata(filepath: pathType, pipeline: bool = False) -> Dict:
     """Parse AQMesh metadata
 
     Args:
@@ -18,17 +19,20 @@ def parse_metadata(filepath: Union[str, Path], pipeline: bool = False) -> Dict:
     Returns:
         dict: Dictionary of metadata
     """
-    raw_metadata = pd.read_csv(metadata_path)
-    filepath = Path(filepath)
+    from addict import Dict as aDict
+    from pandas import read_csv
+    from openghg.util import is_date
 
-    network = "aqmesh"
-    metadata = aDict()
-    site_metadata = metadata[network]
+    filepath = Path(filepath)
+    raw_metadata = read_csv(filepath)
+
+    site_metadata = aDict()
 
     for index, row in raw_metadata.iterrows():
         site_name = row["location_name"].replace(" ", "").lower()
         site_data = site_metadata[site_name]
 
+        site_data["site"] = site_name
         site_data["pod_id"] = row["pod_id_location"]
         site_data["start_date"] = is_date(row["start_date_UTC"])
         site_data["end_date"] = is_date(row["end_date_UTC"])
@@ -39,13 +43,16 @@ def parse_metadata(filepath: Union[str, Path], pipeline: bool = False) -> Dict:
         site_data["in_ulez"] = row["ULEZ"]
         site_data["latitude"] = row["Latitude"]
         site_data["longitude"] = row["Longitude"]
+        site_data["inlet"] = row["Height"]
+        site_data["network"] = "aqmesh_glasgow"
+        site_data["sampling_period"] = "NA"
 
-    metadata = metadata.to_dict()
+    site_metadata = site_metadata.to_dict()
 
     if not pipeline:
         output_filepath = f"{str(filepath.stem)}_parsed.json"
         print(f"\nMetadata written to ./{output_filepath}")
         with open(output_filepath, "w") as f:
-            json.dump(metadata, f, sort_keys=True, indent=4)
+            json.dump(site_metadata, f, sort_keys=True, indent=4)
 
-    return metadata
+    return site_metadata
