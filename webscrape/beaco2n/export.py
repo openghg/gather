@@ -27,26 +27,31 @@ from openghg.util import to_dashboard
 import argparse
 import json
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import Dict, List, Iterable, Union
 
 __all__ = ["export", "export_pipeline"]
 
 pathType = Union[str, Path]
 
 
-def export_pipeline(metadata: Dict, selected_vars: List[str], output_filepath: pathType) -> None:
+def export_pipeline(
+    sites: Union[str, List], selected_vars: List[str], output_filepath: pathType = None, species: List[str] = None
+) -> Dict:
     """Retrieve data from the object store and export it to JSON. Pipeline version that
     expects site metadata as a dict instead of a filepath to JSON.
 
     Args:
-        metadata: Site metadata
+        sites: Site names
         selected_vars: Variables to extract from data such as speices names, e.g. ["co2", "co", "pm"]
         output_filepath: Filepath for writing data, if not given data will be written to dashboard_data.json
+        species: List of species to search for, use may speed up data retrieval.
     Returns:
-        None
+        dict: Dictionary of processed data in JSON format
     """
-    site_names = list(metadata.keys())
-    results = search(site=site_names)
+    if not isinstance(sites, list):
+        sites = [sites]
+    
+    results = search(site=sites, species=species)
 
     if not results:
         raise ValueError(
@@ -55,41 +60,58 @@ def export_pipeline(metadata: Dict, selected_vars: List[str], output_filepath: p
 
     data = results.retrieve_all()
 
-    to_dashboard(data=data, selected_vars=selected_vars, filename=output_filepath)
+    json_data = to_dashboard(data=data, selected_vars=selected_vars)
 
-    print(f"Data written to {output_filepath}")
+    return json_data
 
 
-def export(json_path: Union[str, Path], selected_vars: List[str], output_filepath: str) -> None:
+def export(
+    json_path: Union[str, Path], selected_vars: List[str], output_filepath: str, species: List[str] = None
+) -> None:
     """Retrieve data from the object store and export it to JSON.
 
     Args:
         json_path: Path to site JSON
-        selected_vars: Variables to extract from data such as speices names, e.g. ["co2", "co", "pm"]
+        selected_vars: Variables to extract from data such as species names, e.g. ["co2", "co", "pm"]
         output_filepath: Filepath for writing data, if not given data will be written to dashboard_data.json
+        species: List of species to search for, use may speed up data retrieval.
     Returns:
         None
     """
     json_path = Path(json_path)
     site_data = json.loads(json_path.read_text())
 
-    export_pipeline(metadata=site_data, selected_vars=selected_vars, output_filepath=output_filepath)
+    json_data = export_pipeline(
+        metadata=site_data, selected_vars=selected_vars, output_filepath=output_filepath, species=species
+    )
+
+    with open(output_filepath, "w") as f:
+        json.dump(json_data, f)
+
+    print(f"Data written to {output_filepath}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("json_path", help="path to JSON metadata file", type=str)
     parser.add_argument(
-        "vars", help="variables to extract from data such e.g. co co2 pm", nargs="*", type=str
+        "vars",
+        help="variables to extract from DataFrame e.g. co co2 pm / co2 co2_qc co co_qc",
+        nargs="*",
+        type=str,
     )
     parser.add_argument(
-        "--out", help="filename for JSON data, if not given data is written to dashboard_data.json"
+        "outfile", help="filename for JSON data, if not given data is written to dashboard_data.json"
     )
+    parser.add_argument("--species", help="species to retrieve")
 
     args = parser.parse_args()
 
     json_path = args.json_path
     selected_vars = args.vars
-    outfile = args.out
+    outfile = args.outfile
+    species = args.species
 
-    retrieve_export(json_path=json_path, selected_vars=selected_vars, output_filename=outfile)
+    retrieve_export(
+        json_path=json_path, selected_vars=selected_vars, output_filename=outfile, species=species
+    )

@@ -34,13 +34,15 @@ steps above.
 
 ## Pipeline
 
-The process of retrieving, processing and exporting the BEACO2N data can be performed in a single step with the `run_pipeline.py` script. We use this pipeline to perform automated updates of the BEACO2N data on the [OpenGHG data dashboard](https://openghg.github.io/dashboard/).
+The process of retrieving, processing and exporting the BEACO2N data can be performed in a single step with the `run_pipeline_beaco2n.py` script. We use this pipeline to perform automated updates of the BEACO2N data on the [OpenGHG data dashboard](https://openghg.github.io/dashboard/).
 
-With the site metadata `JSON` file to hand you can run
+With the site metadata `csv` file to hand you can run
 
 ``` bash
-$ python run_pipeline.py get_latest_nodes_parsed.json
+$ python run_pipeline_beaco2n.py --meta glasgow_nodes.csv --vars co2 --export glasgow_co2_data.json --dir beaco2n/
 ```
+
+You should now have a `glasgow_co2_data.json` file containing all the data required by the dashboard.
 
 ## Separate stages
 
@@ -103,3 +105,31 @@ This then searches the object store for the sites given in `glasgow_nodes_parsed
 the dashboard can read and then exports it to a JSON file called `glasgow_data.json`.
 
 The files `glasgow_nodes_parsed.json` and `glasgow_data.json` can then be placed in the dashboard [`data` directory](https://github.com/openghg/dashboard/tree/main/src/data). For updating the dashboard to use the new site data see the [dashboard README](https://github.com/openghg/dashboard/blob/main/README.md).
+
+
+## AQMesh
+
+### Pipeline
+
+The process for `AQMesh` data is very similar to that for `BEACO2N`. We just need to run the `run_aqmesh_pipeline.py` script
+
+``` bash
+$ python run_pipeline_aqmesh.py --species co2 --vars co2 --export aqmesh_data.json --dir aqmesh/
+```
+
+This will download, process and export CO2 data from the AQMesh site to `aqmesh_data.json`. The retrieved data is stored in `aqmesh/`. 
+
+
+## Combining network data
+
+The dashboard can handle data from multiple networks. Using the `combine_networks` function from `webscrape.util` we can easily combine a number
+of datasets. 
+
+```bash
+$ python combine_datasets.py --in beaco2n_data.json aqmesh_data.json --out combined_data.json
+```
+
+You should now have a `combined_data.json` file that can be imported by the dashboard. See instructions for updating the
+dashboard with this new data file in the [dashboard documentation](https://github.com/openghg/dashboard#update-site-data-import).
+
+

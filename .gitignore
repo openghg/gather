@@ -58,6 +58,7 @@ cover/
 # Sphinx documentation
 docs/_build/
 
+
 # PyBuilder
 .pybuilder/
 target/
@@ -94,3 +95,11 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# Ignore all CSV/zip files as likely to be data
+*.csv*
+*.zip*
+
+# Repo speciic files
+scrape_log.txt
+notebooks/*

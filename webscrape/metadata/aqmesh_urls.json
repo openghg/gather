@@ -1,0 +1,8 @@
+{
+  "NO2": "https://breathelondon.net/data/NERCBreatheLondonContinuation/Glasgow_AQmesh_NO2.zip",
+  "NO": "https://breathelondon.net/data/NERCBreatheLondonContinuation/Glasgow_AQmesh_NO.zip",
+  "CO2": "https://breathelondon.net/data/NERCBreatheLondonContinuation/Glasgow_AQmesh_CO2.zip",
+  "O3": "https://breathelondon.net/data/NERCBreatheLondonContinuation/Glasgow_AQmesh_O3.zip ",
+  "PM2": "https://breathelondon.net/data/NERCBreatheLondonContinuation/Glasgow_AQmesh_PM2.5.zip ",
+  "PM10": "https://breathelondon.net/data/NERCBreatheLondonContinuation/Glasgow_AQmesh_PM10.zip"
+}
