@@ -19,7 +19,7 @@ pathType = Union[str, Path]
 
 
 def process_beaco2n_pipeline(
-    data_path: pathType, metadata: pathType, extension: str = ".csv"
+    data_path: pathType, metadata: Dict, extension: str = ".csv"
 ) -> Dict[str, Dict]:
     """Helper function to process BEACO2N data scraped from their website.
     This expects data in a CSV format direct from the site. We also require
@@ -45,6 +45,10 @@ def process_beaco2n_pipeline(
         site_id = str(split[0])
         site_name = split[1]
 
+        if len(split) > 2 or not site_id.isdigit():
+            print(f"Skipping file {filepath} as it doesn't have the filename we expect.")
+            continue
+            
         # Lookup the site metadata
         network = "beaco2n"
         site_metadata = metadata[network][site_name]

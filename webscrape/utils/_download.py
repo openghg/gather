@@ -4,15 +4,19 @@ from requests.packages.urllib3.util.retry import Retry
 
 __all__ = ["download"]
 
-def download(url: str) -> bytes:
+def download(url: str, silent: bool = False) -> bytes:
     """Download the data at the given URL. This function tries to be polite
     and tries not to hammer the remote server with requests.
 
     Args:
         url: URL to csv file
+        silent: Print to screen if False
     Returns:
         bytes: Returned content from http request
     """
+    if not silent:
+        print(f"\nDownloading file from {url}")
+
     # If we get any of these codes we'll try again
     retriable_status_codes = [
         requests.codes.internal_server_error,

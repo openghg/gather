@@ -7,8 +7,10 @@ from typing import Dict, Union
 
 from webscrape.utils import is_date
 
-
 __all__ = ["parse_metadata"]
+
+pathType = Union[str, Path]
+
 
 def parse_metadata(filepath: pathType, pipeline: bool = False) -> Dict:
     """Parse AQMesh metadata

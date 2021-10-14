@@ -99,3 +99,7 @@ cython_debug/
 # Ignore all CSV/zip files as likely to be data
 *.csv*
 *.zip*
+
+# Repo speciic files
+scrape_log.txt
+notebooks/*

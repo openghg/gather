@@ -26,8 +26,7 @@ import argparse
 from pathlib import Path
 from typing import Dict, Union
 
-# Local utils
-from utils.download import download
+from webscrape.utils import download
 
 __all__ = ["scrape_data", "scrape_data_pipeline"]
 

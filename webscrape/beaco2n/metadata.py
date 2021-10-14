@@ -25,7 +25,7 @@ import numpy as np
 from pathlib import Path
 from typing import Dict, Union
 
-from utils.checks import is_nan, is_date
+from webscrape.utils import is_date, is_nan
 
 __all__ = ["parse_metadata"]
 

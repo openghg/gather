@@ -6,9 +6,7 @@ import zipfile
 from io import BytesIO
 from collections import defaultdict
 
-# from utils.download import download
-from webscrape.utils import download
-
+from webscrape.utils import download, load_json
 
 pathType = Union[str, Path]
 
@@ -25,9 +23,13 @@ def scrape_data(species: List[str], download_path: pathType) -> Dict[str, List]:
         dict: Dictionary of files extracted for each species
     """
     download_path = Path(download_path).resolve()
-    url_data = json.loads(Path("urls.json").read_text())
+
+    if not download_path.exists():
+        raise FileNotFoundError()(f"Download folder {download_path} does not exist, please create it.")
+
+    url_data = load_json("aqmesh_urls.json")
     # Extract only the URLs we want to download
-    selected_urls = {k: v for k, v in url_data.items() if k.upper() in species}
+    selected_urls = {k.upper(): url_data[k.upper()] for k in species}
 
     extracted_files = defaultdict(dict)
     # Here we're download zip files

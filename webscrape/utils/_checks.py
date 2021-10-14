@@ -1,4 +1,6 @@
 from typing import Union
+import math
+import pandas as pd
 
 __all__ = ["is_date", "is_nan"]
 
@@ -22,3 +24,4 @@ def is_nan(data: Union[int, float]) -> Union[str, float, int]:
             return round(data, 3)
     except TypeError as e:
         print(data, e)
+

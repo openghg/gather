@@ -27,7 +27,7 @@ from openghg.util import to_dashboard
 import argparse
 import json
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import Dict, List, Iterable, Union
 
 __all__ = ["export", "export_pipeline"]
 
@@ -35,22 +35,23 @@ pathType = Union[str, Path]
 
 
 def export_pipeline(
-    metadata: Dict, selected_vars: List[str], output_filepath: pathType = None, species: List[str] = None
-) -> None:
+    sites: Union[str, List], selected_vars: List[str], output_filepath: pathType = None, species: List[str] = None
+) -> Dict:
     """Retrieve data from the object store and export it to JSON. Pipeline version that
     expects site metadata as a dict instead of a filepath to JSON.
 
     Args:
-        metadata: Site metadata
+        sites: Site names
         selected_vars: Variables to extract from data such as speices names, e.g. ["co2", "co", "pm"]
         output_filepath: Filepath for writing data, if not given data will be written to dashboard_data.json
         species: List of species to search for, use may speed up data retrieval.
     Returns:
-        None
+        dict: Dictionary of processed data in JSON format
     """
-    network = "beaco2n"
-    site_names = list(metadata[network].keys())
-    results = search(site=site_names, species=species)
+    if not isinstance(sites, list):
+        sites = [sites]
+    
+    results = search(site=sites, species=species)
 
     if not results:
         raise ValueError(

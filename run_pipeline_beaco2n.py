@@ -10,10 +10,7 @@ from pandas import Timestamp, Timedelta
 from tempfile import TemporaryDirectory
 from typing import Dict, List, Union
 
-from beaco2n.metadata import parse_metadata
-from beaco2n.scraper import scrape_data_pipeline
-from beaco2n.process import process_beaco2n_pipeline
-from beaco2n.export import export_pipeline
+from webscrape.beaco2n import parse_metadata, scrape_data_pipeline, process_beaco2n_pipeline, export_pipeline
 from copy import deepcopy
 
 pathType = Union[str, Path]
@@ -43,7 +40,7 @@ def combine(metadata: Dict, data: Dict) -> Dict:
 
 
 def pipeline(
-    metadata_filepath: pathType, selected_vars: List, export_filepath: pathType, download_dir: pathType = None
+    metadata_filepath: pathType, selected_vars: List, export_filepath: pathType, download_path: pathType = None
 ) -> None:
     """Run the pipeline to scrape, process and export data from the
     BEACO2N project (http://beacon.berkeley.edu/)
@@ -52,13 +49,13 @@ def pipeline(
         metadata_filepath: Path to site metadata CSV
         selected_vars: Variables from data we want to export
         export_filepath: Path to write dashboard data
-        download_dir: Output directory for processed
+        download_path: Output directory for processed
     Returns:
         None
     """
-    if download_dir is None:
+    if download_path is None:
         tmpdir = TemporaryDirectory()
-        download_dir = tmpdir.name
+        download_path = tmpdir.name
 
     # Check to see if we've downloaded the data within the last 6 hours
     scrape_log = Path("scrape_log.txt")
@@ -76,15 +73,16 @@ def pipeline(
 
     # Then we download the data
     if not scrape_complete:
-        scrape_data_pipeline(metadata=metadata, output_directory=download_dir)
+        scrape_data_pipeline(metadata=metadata, output_directory=download_path)
         now = str(Timestamp.now())
         scrape_log.write_text(now)
 
     # Process the data with OpenGHG
-    results = process_beaco2n_pipeline(data_path=download_dir, metadata=metadata)
+    results = process_beaco2n_pipeline(data_path=download_path, metadata=metadata)
 
+    site_names = list(metadata["beaco2n"].keys())
     # Now we can export the processed data in a format expected by the dashboard
-    json_data = export_pipeline(metadata=metadata, selected_vars=selected_vars)
+    json_data = export_pipeline(sites=site_names, selected_vars=selected_vars)
 
     # Now combine the data and metadata so we have everything in one place
     combined_data = combine(metadata=metadata, data=json_data)
@@ -103,24 +101,20 @@ def pipeline(
 if __name__ == "__main__":
     example_text = """Usage:
 
-    $ python run_pipeline.py <metadata_json> <variable1 variable2 ...>
+    $ python run_pipeline_beaco2n.py --meta glasgow_nodes.csv --vars co2 --export glasgow_co2_data.json --dir beaco2n/
 
-    Uses a temporary directory to download the raw BEACO2N data
+    Downloads, processes and exports the data to a glasgow_co2_data.json file. Retrieved raw files are downloaded to the
+    beaco2n/ directory.
 
-    $ python run_pipeline.py <metadata_json> <variable1 variable2 ...> /path/to/exported_data.json --dir /my/data/dir
+    Similary running
 
-    Downloads the raw BEACO2N data to /my/data/dir
+    $ python run_pipeline_beaco2n.py --meta glasgow_nodes.csv --vars co2 --export glasgow_co2_data.json
 
-    Example:
+    would do the same thing but would store the downloaded raw files in a temporary directory which is cleaned up
+    after run.
 
-    $ python run_pipeline.py glasgow_metadata.json co2 glasgow_data.json
+    $ python run_pipeline_beaco2n.py --meta <metadata csv> --vars <species to extract> --export <proc. data out JSON> --dir <download directory>
 
-    This downloads the scraped data to a temporary directory and exports only the CO2 measurements to a 
-    file called dashboard_data_<timestamp>.json
-
-    $ python run_pipeline.py glasgow_metadata.json co2 glasgow_data.json --dir download/
-
-    This does the same as above but saves the raw BEACO2N data to the download/ directory.
     """
 
     parser = argparse.ArgumentParser(
@@ -129,21 +123,21 @@ if __name__ == "__main__":
         epilog=example_text,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument("json_path", help="path to JSON metadata file", type=str)
-    parser.add_argument("vars", help="variables to extract from data such e.g. ch4 co2", nargs="*", type=str)
-    parser.add_argument("export", help="filepath for dashboard data export")
+    parser.add_argument("--meta", help="path to JSON metadata file", type=str)
+    parser.add_argument("--vars", help="variables to extract from data such e.g. ch4 co2", nargs="*", type=str)
+    parser.add_argument("--export", help="filepath for dashboard data export")
     parser.add_argument("--dir", help="directory for data download", type=str)
 
     args = parser.parse_args()
 
-    json_path = args.json_path
-    download_dir = args.dir
+    metadata_path = args.meta
+    download_path = args.dir
     selected_vars = args.vars
     export_filepath = args.export
 
     pipeline(
-        metadata_filepath=json_path,
-        download_dir=download_dir,
+        metadata_filepath=metadata_path,
+        download_path=download_path,
         selected_vars=selected_vars,
         export_filepath=export_filepath,
     )
