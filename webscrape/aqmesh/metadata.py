@@ -5,8 +5,8 @@ from pathlib import Path
 import json
 from typing import Dict, Union
 
-# Local utils
-from utils.checks import is_date
+from webscrape.utils import is_date
+
 
 __all__ = ["parse_metadata"]
 

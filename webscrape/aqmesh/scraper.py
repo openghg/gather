@@ -6,7 +6,8 @@ import zipfile
 from io import BytesIO
 from collections import defaultdict
 
-from utils.download import download
+# from utils.download import download
+from webscrape.utils import download
 
 
 pathType = Union[str, Path]

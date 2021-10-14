@@ -1,3 +1,5 @@
+from typing import Union
+
 __all__ = ["is_date", "is_nan"]
 
 def is_date(date: str) -> str:
