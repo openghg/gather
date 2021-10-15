@@ -41,13 +41,10 @@ def parse_metadata(metadata_filepath: Union[str, Path], pipeline: bool = False) 
         dict: Dictionary of site metadata
     """
     metadata_filepath = Path(metadata_filepath).resolve()
-    site_data = pd.read_csv(metadata_filepath)
+    raw_metadata = pd.read_csv(metadata_filepath)
 
-    network = "beaco2n"
-    metadata = aDict()
-    site_metadata = metadata[network]
-
-    for index, row in site_data.iterrows():
+    site_metadata = aDict()
+    for index, row in raw_metadata.iterrows():
         site_name = row["node_name_long"].lower().replace(" ", "")
         site_data = site_metadata[site_name]
 

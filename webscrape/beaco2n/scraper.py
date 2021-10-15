@@ -128,6 +128,8 @@ def scrape_data_pipeline(metadata: Dict, output_directory: pathType = None) -> N
     # the iteration process for the progress bar
     site_metadata_pbar = tqdm(metadata.items())
 
+    print(metadata)
+
     for node_name, data in site_metadata_pbar:
         site_metadata_pbar.set_description(f"Getting data for {node_name}")
 

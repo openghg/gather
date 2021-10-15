@@ -1,4 +1,4 @@
-from . import aqmesh, beaco2n, utils
+from . import aqmesh, beaco2n, pipeline, utils
 import sys as _sys
 
 __all__ = ["aqmesh", "beaco2n", "utils"]

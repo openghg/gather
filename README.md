@@ -39,7 +39,7 @@ The process of retrieving, processing and exporting the BEACO2N data can be perf
 With the site metadata `csv` file to hand you can run
 
 ``` bash
-$ python run_pipeline_beaco2n.py --meta glasgow_nodes.csv --vars co2 --export glasgow_co2_data.json --dir beaco2n/
+$ python run_pipeline_beaco2n.py --vars co2 --export glasgow_co2_data.json --dir beaco2n/
 ```
 
 You should now have a `glasgow_co2_data.json` file containing all the data required by the dashboard.
