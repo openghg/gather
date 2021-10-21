@@ -50,13 +50,13 @@ def process_beaco2n_pipeline(
             continue
             
         # Lookup the site metadata
-        network = "beaco2n"
-        site_metadata = metadata[network][site_name]
+        site_metadata = metadata[site_name]
 
         site_id_meta = str(site_metadata["id"])
         inlet = site_metadata["magl"]
         # Instrument name taken from http://beacon.berkeley.edu/metadata/
         instrument = "shinyei"
+        network = "beaco2n"
 
         if site_id != site_id_meta:
             raise ValueError(f"Mismatch between read site ID ({site_id}) and metadata ID ({site_id_meta})")

@@ -25,7 +25,7 @@ def scrape_data(species: List[str], download_path: pathType) -> Dict[str, List]:
     download_path = Path(download_path).resolve()
 
     if not download_path.exists():
-        raise FileNotFoundError()(f"Download folder {download_path} does not exist, please create it.")
+        raise FileNotFoundError(f"Download folder {download_path} does not exist, please create it.")
 
     url_data = load_json("aqmesh_urls.json")
     # Extract only the URLs we want to download

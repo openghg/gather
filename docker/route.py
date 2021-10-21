@@ -25,7 +25,7 @@ async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:
     """
 
     try:
-        data = json.loads(data.getvalue())
+        post_data = json.loads(data.getvalue())
     except Exception:
         error_str = str(format_exc())
         return Response(ctx=ctx, response_data=error_str)
@@ -33,7 +33,7 @@ async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:
     result = {}
 
     try:
-        aqmesh_args = data["aqmesh"]
+        aqmesh_args = post_data["aqmesh"]
         species = aqmesh_args["species"]
         selected_vars = aqmesh_args["selected_vars"]
 
@@ -60,17 +60,20 @@ async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:
         result["aqmesh"] = f"Did not run - {error_str}"
 
     try:
-        beaco2n_args = data["beaco2n"]
+        beaco2n_args = post_data["beaco2n"]
 
         selected_vars = beaco2n_args["selected_vars"]
         export_filepath = "beaco2n_data.json"
 
         run_beaco2n(selected_vars=selected_vars, export_filepath=export_filepath)
         # Do something with the exported data
-        result["beaco2n"] = str(datetime.now())
+        result["beaco2n"] = datas
     except Exception:
         error_str = str(format_exc())
         result["beaco2n"] = f"Did not run - {error_str}"
+
+    # Now we combine the data and push to the repo
+    
 
     headers = {"Content-Type": "application/octet-stream"}
     return Response(ctx=ctx, response_data=result, headers=headers)

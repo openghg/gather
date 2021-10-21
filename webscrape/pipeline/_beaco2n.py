@@ -29,7 +29,7 @@ def _combine(metadata: Dict, data: Dict) -> Dict:
         for species, species_data in network_data.items():
             for site, siteData in species_data.items():
                 data_metadata = siteData["metadata"]
-                site_metadata = metadata[network][site]
+                site_metadata = metadata[site]
 
                 to_update = {k: v for k, v in site_metadata.items() if k not in data_metadata}
                 data_metadata.update(to_update)
@@ -52,17 +52,19 @@ def run_beaco2n(selected_vars: List, export_filepath: pathType, download_path: p
         tmpdir = TemporaryDirectory()
         download_path = tmpdir.name
 
-    # Check to see if we've downloaded the data within the last 6 hours, only useful
-    # if running this locally
-    scrape_log = Path("scrape_log.txt")
+    # TODO - remove these checks for now, not necessary within the serverless pipeline setting
+    # Can add them into another function that wraps this maybe?
+    # # Check to see if we've downloaded the data within the last 6 hours, only useful
+    # # if running this locally
+    # scrape_log = Path("scrape_log.txt")
 
-    scrape_complete = False
-    if scrape_log.exists():
-        scrape_time_str = scrape_log.read_text()
-        scrape_time = Timestamp(scrape_time_str)
+    # scrape_complete = False
+    # if scrape_log.exists():
+    #     scrape_time_str = scrape_log.read_text()
+    #     scrape_time = Timestamp(scrape_time_str)
 
-        if Timestamp.now() - scrape_time < Timedelta(hours=6.0):
-            scrape_complete = True
+    #     if Timestamp.now() - scrape_time < Timedelta(hours=6.0):
+    #         scrape_complete = True
 
     # First parse the metadata retrieved from the BEACO2N site
     # metadata = parse_metadata(metadata_filepath=metadata_filepath, pipeline=True)
@@ -71,15 +73,15 @@ def run_beaco2n(selected_vars: List, export_filepath: pathType, download_path: p
     metadata = load_json(filename="beaco2n_sites.json")
 
     # Then we download the data
-    if not scrape_complete:
-        scrape_data_pipeline(metadata=metadata, output_directory=download_path)
-        now = str(Timestamp.now())
-        scrape_log.write_text(now)
+    # if not scrape_complete:
+    scrape_data_pipeline(metadata=metadata, output_directory=download_path)
+    # now = str(Timestamp.now())
+    # scrape_log.write_text(now)
 
     # Process the data with OpenGHG
     results = process_beaco2n_pipeline(data_path=download_path, metadata=metadata)
 
-    site_names = list(metadata["beaco2n"].keys())
+    site_names = list(metadata.keys())
     # Now we can export the processed data in a format expected by the dashboard
     json_data = export_pipeline(sites=site_names, selected_vars=selected_vars)
 

@@ -1,6 +1,6 @@
 schema_version: 20180708
 name: openghg_pipeline
-version: 0.0.31
+version: 0.0.32
 runtime: docker
 memory: 2048
 timeout: 120

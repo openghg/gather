@@ -2,6 +2,7 @@ from typing import List, Dict, Iterable, Union
 from pathlib import Path
 from openghg.processing import search
 from openghg.util import to_dashboard
+import json
 
 __all__ = ["export_pipeline", "export"]
 

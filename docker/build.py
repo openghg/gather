@@ -55,12 +55,15 @@ if args.nocache:
     cmd_str += " --no-cache"
 
 cmd_list = cmd_str.split()
-subprocess.check_call(cmd_list)
 
-
-print("\nDeploying Fn functions...\n")
-# Make sure we have an app calld openghg
-subprocess.run(["fn", "create", "app", "openghg_pipeline"])
-subprocess.check_call(["fn", "--verbose", "deploy", "--local"])
+try:
+    subprocess.check_call(cmd_list)
+    print("\nDeploying Fn functions...\n")
+    # Make sure we have an app calld openghg
+    subprocess.run(["fn", "create", "app", "openghg_pipeline"])
+    subprocess.check_call(["fn", "--verbose", "deploy", "--local"])
+except subprocess.CalledProcessError:
+    cleanup()
+    raise
 
 cleanup()

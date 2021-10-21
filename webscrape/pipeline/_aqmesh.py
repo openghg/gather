@@ -3,7 +3,7 @@ from pathlib import Path
 import json
 from pandas import Timestamp, Timedelta
 from tempfile import TemporaryDirectory
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Set
 
 from webscrape.aqmesh import scrape_data, process_pipeline, export_pipeline
 
@@ -37,22 +37,22 @@ def run_aqmesh(
         tmpdir = TemporaryDirectory()
         download_path = tmpdir.name
 
-    # Check to see if we've downloaded the data within the last 6 hours
-    scrape_log = Path("scrape_log.txt")
+    # # Check to see if we've downloaded the data within the last 6 hours
+    # scrape_log = Path("scrape_log.txt")
 
-    scrape_complete = False
-    if scrape_log.exists():
-        scrape_time_str = scrape_log.read_text()
-        scrape_time = Timestamp(scrape_time_str)
+    # scrape_complete = False
+    # if scrape_log.exists():
+    #     scrape_time_str = scrape_log.read_text()
+    #     scrape_time = Timestamp(scrape_time_str)
 
-        if Timestamp.now() - scrape_time < Timedelta(hours=6.0):
-            scrape_complete = True
+    #     if Timestamp.now() - scrape_time < Timedelta(hours=6.0):
+    #         scrape_complete = True
 
     file_list = scrape_data(species=species, download_path=download_path)
     processing_results = process_pipeline(extracted_files=file_list)
 
     # Not all sites might have measurements for each species
-    all_sites = set()
+    all_sites: Set = set()
     for species, site_data in processing_results.items():
         all_sites.update(site_data.keys())
 
