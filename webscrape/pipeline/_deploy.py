@@ -9,27 +9,16 @@ def deploy(filenames: List) -> None:
         Returns:
             None
     """
-    repo_url = "git@github.com:openghg/dashboard_data.git"
-    to_path = "/tmp"
-    try:
-        Repo.clone_from("git@github.com:openghg/dashboard_data.git", to_path=to_path)
+    # Read the personal token from the secret environment variable
+    # Store it to .git-credentials ?
+    # Get git config emial 
 
+    # From https://www.appveyor.com/docs/how-to/git-push/
+    #       - git config --global credential.helper store
+    #   - ps: Set-Content -Path "$HOME\.git-credentials" -Value "https://$($env:access_token):x-oauth-basic@github.com`n" -NoNewline
+    #   - git config --global user.email "Your email"
+    #   - git config --global user.name "Your Name"
+    #   - git commit ...
+    #   - git push ...
 
-
-
-
-PATH_OF_GIT_REPO = r'path\to\your\project\folder\.git'  # make sure .git folder is properly configured
-COMMIT_MESSAGE = 'comment from python script'
-
-def git_push():
-    try:
-        repo = Repo(PATH_OF_GIT_REPO)
-        repo.git.add(update=True)
-        repo.index.commit(COMMIT_MESSAGE)
-        origin = repo.remote(name='origin')
-        origin.push()
-    except:
-        print('Some error occured while pushing the code')    
-
-git_push()
-
+    # Can we sue GitPython for this?
