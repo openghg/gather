@@ -1,4 +1,4 @@
-from typing import List, Dict, Iterable, Union
+from typing import List, Dict, Union
 from pathlib import Path
 from openghg.processing import search
 from openghg.util import to_dashboard
@@ -42,7 +42,10 @@ def export_pipeline(
 
 
 def export(
-    species: Union[str, List], selected_vars: List[str], output_filepath: str, sites: List[str] = None
+    species: Union[str, List],
+    selected_vars: List[str],
+    output_filepath: str,
+    sites: List[str] = None,
 ) -> None:
     """Retrieve data from the object store and export it to JSON.
 
@@ -54,11 +57,11 @@ def export(
     Returns:
         None
     """
-    json_path = Path(json_path)
-    site_data = json.loads(json_path.read_text())
-
     json_data = export_pipeline(
-        sites=sites, selected_vars=selected_vars, output_filepath=output_filepath, species=species
+        selected_vars=selected_vars,
+        output_filepath=output_filepath,
+        species=species,
+        sites=sites,
     )
 
     with open(output_filepath, "w") as f:

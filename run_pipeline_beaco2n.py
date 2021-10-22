@@ -3,6 +3,7 @@ This can be used to run the whole data scrape, process and export pipeline.
 If you just want to run a single state see the scripts in the beaco2n/ directory.
 
 """
+import argparse
 from webscrape.pipeline import run_beaco2n
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ import json
 
 __all__ = ["combine_networks"]
 
+
 def combine_networks(data_files: List, output_file: Union[str, Path]) -> None:
     """Combine the data from multiple networks into a single site
     We expect the JSON files to have been export by the OpenGHG to_dashboard function.

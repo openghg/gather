@@ -1,13 +1,11 @@
 from io import BytesIO
 from fdk.context import InvokeContext
 from fdk.response import Response
-from importlib import import_module
-from typing import Dict
 from traceback import format_exc
-from webscrape.pipeline import run_aqmesh, run_beaco2n
-from datetime import datetime
 import json
-from pathlib import Path
+import os
+
+from webscrape.pipeline import handler
 
 
 async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:
@@ -23,57 +21,16 @@ async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:
     Returns:
         dict: Dictionary of return data
     """
-
     try:
+        # There's no point doing all the processing just find we
+        # don't have a token
+        _ = os.environ["GIT_TOKEN"]
         post_data = json.loads(data.getvalue())
     except Exception:
         error_str = str(format_exc())
         return Response(ctx=ctx, response_data=error_str)
 
-    result = {}
+    # This handles the calls to each of the network pipelines
+    result = handler(args=post_data)
 
-    try:
-        aqmesh_args = post_data["aqmesh"]
-        species = aqmesh_args["species"]
-        selected_vars = aqmesh_args["selected_vars"]
-
-        download_path = Path("/tmp/aqmesh_download")
-        download_path.mkdir(parents=True, exist_ok=True)
-        export_filepath = download_path.joinpath("aqmesh_data.json")
-
-        sites = aqmesh_args.get("sites")
-
-        run_aqmesh(
-            species=species,
-            selected_vars=selected_vars,
-            export_filepath=export_filepath,
-            download_path=download_path,
-            sites=sites,
-        )
-
-        json_data = Path(export_filepath).read_text()
-
-        # Do something with the exported data
-        result["aqmesh"] = json_data
-    except Exception:
-        error_str = str(format_exc())
-        result["aqmesh"] = f"Did not run - {error_str}"
-
-    try:
-        beaco2n_args = post_data["beaco2n"]
-
-        selected_vars = beaco2n_args["selected_vars"]
-        export_filepath = "beaco2n_data.json"
-
-        run_beaco2n(selected_vars=selected_vars, export_filepath=export_filepath)
-        # Do something with the exported data
-        result["beaco2n"] = datas
-    except Exception:
-        error_str = str(format_exc())
-        result["beaco2n"] = f"Did not run - {error_str}"
-
-    # Now we combine the data and push to the repo
-    
-
-    headers = {"Content-Type": "application/octet-stream"}
-    return Response(ctx=ctx, response_data=result, headers=headers)
+    return Response(ctx=ctx, response_data=result)

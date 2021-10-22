@@ -3,7 +3,7 @@ FROM fnproject/python:3.8-dev as build-stage
 RUN apt-get update && apt-get install git -y
 
 COPY requirements.txt requirements.txt
-# pip 20.2.4 is the version before the new resolver was introduced
+
 RUN pip3 install --upgrade pip wheel setuptools && \
     pip3 install --target /python/ -r requirements.txt && \
     pip3 install --target /python/ git+https://github.com/openghg/openghg.git@devel#egg=openghg

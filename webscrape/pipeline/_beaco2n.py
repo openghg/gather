@@ -1,11 +1,12 @@
-import argparse
 from pathlib import Path
-import json
-from pandas import Timestamp, Timedelta
 from tempfile import TemporaryDirectory
 from typing import Dict, List, Union
 
-from webscrape.beaco2n import parse_metadata, scrape_data_pipeline, process_beaco2n_pipeline, export_pipeline
+from webscrape.beaco2n import (
+    scrape_data_pipeline,
+    process_beaco2n_pipeline,
+    export_pipeline,
+)
 from webscrape.utils import load_json
 from copy import deepcopy
 
@@ -31,22 +32,23 @@ def _combine(metadata: Dict, data: Dict) -> Dict:
                 data_metadata = siteData["metadata"]
                 site_metadata = metadata[site]
 
-                to_update = {k: v for k, v in site_metadata.items() if k not in data_metadata}
+                to_update = {
+                    k: v for k, v in site_metadata.items() if k not in data_metadata
+                }
                 data_metadata.update(to_update)
 
     return data_copy
 
 
-def run_beaco2n(selected_vars: List, export_filepath: pathType, download_path: pathType = None) -> None:
+def run_beaco2n(selected_vars: List, download_path: pathType = None) -> Dict:
     """Run the pipeline to scrape, process and export data from the
     BEACO2N project (http://beacon.berkeley.edu/)
 
     Args:
         selected_vars: Variables from data we want to export
-        export_filepath: Path to write dashboard data
         download_path: Output directory for processed
     Returns:
-        None
+        dict: Dictionary of network data
     """
     if download_path is None:
         tmpdir = TemporaryDirectory()
@@ -79,7 +81,7 @@ def run_beaco2n(selected_vars: List, export_filepath: pathType, download_path: p
     # scrape_log.write_text(now)
 
     # Process the data with OpenGHG
-    results = process_beaco2n_pipeline(data_path=download_path, metadata=metadata)
+    process_beaco2n_pipeline(data_path=download_path, metadata=metadata)
 
     site_names = list(metadata.keys())
     # Now we can export the processed data in a format expected by the dashboard
@@ -88,12 +90,9 @@ def run_beaco2n(selected_vars: List, export_filepath: pathType, download_path: p
     # Now combine the data and metadata so we have everything in one place
     combined_data = _combine(metadata=metadata, data=json_data)
 
-    with open(export_filepath, "w") as f:
-        json.dump(combined_data, f)
-
-    print(f"\nData written to {export_filepath}")
-
     try:
         tmpdir.cleanup()
     except (NameError, AttributeError):
         pass
+
+    return combined_data

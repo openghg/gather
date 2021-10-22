@@ -1,11 +1,9 @@
-import pandas as pd
 from addict import Dict as aDict
-from collections import defaultdict
 from pathlib import Path
 import json
 from typing import Dict, Union
-
-from webscrape.utils import is_date
+from pandas import read_csv
+from openghg.util import is_date
 
 __all__ = ["parse_metadata"]
 
@@ -21,9 +19,6 @@ def parse_metadata(filepath: pathType, pipeline: bool = False) -> Dict:
     Returns:
         dict: Dictionary of metadata
     """
-    from addict import Dict as aDict
-    from pandas import read_csv
-    from openghg.util import is_date
 
     filepath = Path(filepath)
     raw_metadata = read_csv(filepath)

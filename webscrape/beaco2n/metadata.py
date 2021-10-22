@@ -18,10 +18,7 @@ $ python extract_site_data.py <filepath_to_csv>
 from addict import Dict as aDict
 import json
 import pandas as pd
-from collections import defaultdict
-import math
 import argparse
-import numpy as np
 from pathlib import Path
 from typing import Dict, Union
 
@@ -58,7 +55,7 @@ def parse_metadata(metadata_filepath: Union[str, Path], pipeline: bool = False) 
         site_data["node_folder_id"] = row["node_folder_id"]
 
     # Convert to a normal dict
-    metadata = metadata.to_dict()
+    metadata = site_metadata.to_dict()
 
     if not pipeline:
         output_filepath = f"{str(metadata_filepath.stem)}_parsed.json"

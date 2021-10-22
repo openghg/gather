@@ -4,6 +4,7 @@ from requests.packages.urllib3.util.retry import Retry
 
 __all__ = ["download"]
 
+
 def download(url: str, silent: bool = False) -> bytes:
     """Download the data at the given URL. This function tries to be polite
     and tries not to hammer the remote server with requests.

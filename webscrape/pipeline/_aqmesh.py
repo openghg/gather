@@ -1,7 +1,4 @@
-import argparse
 from pathlib import Path
-import json
-from pandas import Timestamp, Timedelta
 from tempfile import TemporaryDirectory
 from typing import Dict, List, Union, Set
 
@@ -15,10 +12,9 @@ __all__ = ["run_aqmesh"]
 def run_aqmesh(
     species: Union[str, List],
     selected_vars: List,
-    export_filepath: pathType,
     download_path: pathType = None,
     sites: List = None,
-) -> None:
+) -> Dict:
     """Run the whole processing pipeline
 
     Args:
@@ -28,7 +24,7 @@ def run_aqmesh(
         download_path: Output directory for processed
         sites: List of sites to export
     Returns:
-        None
+        dict: Dictionary of network data
     """
     if not isinstance(species, list):
         species = [species]
@@ -62,14 +58,13 @@ def run_aqmesh(
 
     all_sites = list(all_sites)
 
-    json_data = export_pipeline(species=species, selected_vars=selected_vars, sites=all_sites)
-
-    with open(export_filepath, "w") as f:
-        json.dump(json_data, f)
-
-    print(f"\nData written to {export_filepath}")
+    json_data = export_pipeline(
+        species=species, selected_vars=selected_vars, sites=all_sites
+    )
 
     try:
         tmpdir.cleanup()
     except (NameError, AttributeError):
         pass
+
+    return json_data
