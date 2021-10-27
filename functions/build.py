@@ -4,7 +4,7 @@ import subprocess
 
 
 def cleanup():
-    shutil.rmtree("webscrape")
+    shutil.rmtree("./base_image/webscrape")
 
 
 parser = argparse.ArgumentParser(
@@ -48,7 +48,7 @@ args = parser.parse_args()
 
 try:
     # Copy webscrape to this directory
-    shutil.copytree("../../webscrape", "webscrape")
+    shutil.copytree("../webscrape", "./base_image/webscrape")
 except FileExistsError:
     pass
 
@@ -58,20 +58,39 @@ tag_str = ":".join(("openghg/pipeline-base", tag))
 
 # build the file
 cmd_str = f"docker build --tag {tag_str} ."
+scrape_cmd_str = "docker build --tag openghg/scrape-fn:latest ."
+picarro_cmd_str = "docker build --tag openghg/picarro-fn:latest ."
 
 if args.nocache:
     cmd_str += " --no-cache"
 
-cmd_list = cmd_str.split()
+base_cmd_list = cmd_str.split()
+scrape_cmd_list = scrape_cmd_str.split()
+picarro_cmd_list = picarro_cmd_str.split()
 
 try:
-    subprocess.check_call(cmd_list)
-    # print("\nDeploying Fn functions...\n")
-    # # Make sure we have an app calld openghg
-    # subprocess.run(["fn", "create", "app", "openghg_pipeline"])
-    # subprocess.check_call(["fn", "--verbose", "deploy", "--local"])
-except subprocess.CalledProcessError:
-    cleanup()
-    raise
+    # Build the base image first
+    subprocess.check_call(base_cmd_list, cwd="./base_image")
+    subprocess.check_call(scrape_cmd_list, cwd="./scrape")
+    subprocess.check_call(picarro_cmd_list, cwd="./picarro")
 
-cleanup()
+    print("\nDeploying Fn functions...\n")
+
+    app_name = "openghg_pipeline"
+    # Make sure we have an app calld openghg
+    subprocess.run(
+        [
+            "fn",
+            "create",
+            "app",
+        ]
+    )
+
+    deploy_cmd = ["fn", "--verbose", "deploy", "--app", app_name, "--local"]
+
+    subprocess.check_call(deploy_cmd, cwd="./scrape")
+    subprocess.check_call(deploy_cmd, cwd="./picarro")
+except subprocess.CalledProcessError as e:
+    print(f"Error - {str(e)}")
+finally:
+    cleanup()
