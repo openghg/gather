@@ -17,7 +17,21 @@ def handler(args: Dict):
     Returns:
         Dict: Dictionary of results of processing
     """
-    from webscrape.pipeline import run_aqmesh, run_beaco2n
+    from webscrape.pipeline import run_aqmesh, run_beaco2n, run_glasgow_picarro
+
+    # Clone the repo and read in the data, this means we'll just update
+    # the data that's processed correctly.
+    repo_path = Path("/tmp/dashboard_data")
+    repo_path.mkdir()
+
+    git_token = os.environ["GIT_TOKEN"]
+    remote_url = f"https://{git_token}:x-oauth-basic@github.com/openghg/dashboard_data"
+    repo = Repo.clone_from(remote_url, repo_path, branch="main")
+
+    # Read and load the old data so we can just update it if one of the
+    # pipelines below fails
+    combined_data_path = repo_path.joinpath("combined_data.json")
+    old_combined_data = json.loads(combined_data_path.read_text())
 
     result = {}
     successes = {}
@@ -69,20 +83,31 @@ def handler(args: Dict):
         result["beaco2n"] = f"Did not run - {error_str}"
         successes["beaco2n"] = False
 
-    repo_path = Path("/tmp/dashboard_data")
-    repo_path.mkdir()
+    # Glasgow Science Tower Picarro
+    try:
+        glasgow_args = args["glasgow_picarro"]
+        # Binary (?) data
+        raw_data = glasgow_args["data"]
 
-    git_token = os.environ["GIT_TOKEN"]
-    remote_url = f"https://{git_token}:x-oauth-basic@github.com/openghg/dashboard_data"
-    repo = Repo.clone_from(remote_url, repo_path, branch="main")
+        glasgow_data = run_glasgow_picarro(data=raw_data, args={})
+        combined_data.update(glasgow_data)
+
+        now_str = str(Timestamp.now())
+        result["glasgow_picarro"] = f"Glasgow Picarro run success at - {now_str}"
+    except Exception:
+        error_str = str(format_exc())
+        result["glasgow_picarro"] = f"Did not run - {error_str}"
+        successes["glasgow_picarro"] = False
+
+    # Update the old data with the newly processed data
+    old_combined_data.update(combined_data)
 
     # Write the file for commit
-    export_filepath = str(repo_path.joinpath("combined_data.json"))
+    export_filepath = repo_path.joinpath("combined_data.json")
+    export_filepath.write_text(json.dumps(old_combined_data))
 
-    with open(export_filepath, "w") as f:
-        json.dump(combined_data, f)
-
-    file_list = [export_filepath]
+    # The list of files we want to add in this commit
+    file_list = [str(export_filepath)]
 
     # Now we do the commit
     commit_str = ", ".join([n for n, v in successes.items() if v])
