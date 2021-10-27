@@ -7,7 +7,7 @@ pathType = Union[str, Path]
 __all__ = ["process_pipeline"]
 
 
-def process_pipeline(filepath: pathType) -> Dict[str, Dict[Union[str, Dict]]]:
+def process_pipeline(filepath: pathType) -> Dict:
     """Process the data from the Glasgow Science tower Picarro"""
     filepath = Path(filepath)
     filename = filepath.name

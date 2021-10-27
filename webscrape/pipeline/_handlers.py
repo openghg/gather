@@ -1,4 +1,4 @@
-__all__ = ["handler"]
+__all__ = ["scrape_handler"]
 
 from typing import Dict
 from pathlib import Path
@@ -9,7 +9,7 @@ import os
 import json
 
 
-def handler(args: Dict):
+def scrape_handler(args: Dict):
     """Handles the calling of the pipeline functions
 
     Args:

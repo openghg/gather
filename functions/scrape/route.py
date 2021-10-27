@@ -5,7 +5,7 @@ from traceback import format_exc
 import json
 import os
 
-from webscrape.pipeline import handler
+from webscrape.handlers import data_handler, scrape_handler
 
 
 async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:
@@ -21,6 +21,26 @@ async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:
     Returns:
         dict: Dictionary of return data
     """
+    headers = ctx.Headers()
+
+    # try:
+    #     auth_key = headers["authorization"]
+    # except KeyError:
+    #     error_str = str(format_exc())
+    #     return Response(ctx=ctx, response_data=error_str)
+
+    # # Quick and dirty auth key lookup
+    # # Load the valid authentication keys from 
+    # valid_keys = json.loads(os.environ["VALID_KEYS"])
+
+    # if auth_key not in valid_keys:
+    #     ctx.SetResponseHeaders({"Authorisation": "Denied"}, 403)
+    #     return Response(ctx=ctx, response_data=error_str)
+
+    
+    
+
+
     try:
         # There's no point doing all the processing just find we
         # don't have a token
@@ -30,7 +50,4 @@ async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:
         error_str = str(format_exc())
         return Response(ctx=ctx, response_data=error_str)
 
-    # This handles the calls to each of the network pipelines
-    result = handler(args=post_data)
-
-    return Response(ctx=ctx, response_data=result)
+    return Response(ctx=ctx, response_data=data.getvalue())
