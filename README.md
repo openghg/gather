@@ -133,3 +133,6 @@ You should now have a `combined_data.json` file that can be imported by the dash
 dashboard with this new data file in the [dashboard documentation](https://github.com/openghg/dashboard#update-site-data-import).
 
 
+## Glasgow Science Tower Picarro
+
+This functionality doesn't quite belong in a repository called `webscrape` but fits with the updating of the data dashboard.
