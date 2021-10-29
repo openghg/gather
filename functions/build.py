@@ -62,17 +62,16 @@ scrape_cmd_str = "docker build --tag openghg/scrape-fn:latest ."
 picarro_cmd_str = "docker build --tag openghg/picarro-fn:latest ."
 
 if args.nocache:
-    cmd_str += " --no-cache"
-
-base_cmd_list = cmd_str.split()
-scrape_cmd_list = scrape_cmd_str.split()
-picarro_cmd_list = picarro_cmd_str.split()
+    no_cache_str = " --no-cache"
+    cmd_str += no_cache_str
+    scrape_cmd_str += no_cache_str
+    picarro_cmd_str += no_cache_str
 
 try:
     # Build the base image first
-    subprocess.check_call(base_cmd_list, cwd="./base_image")
-    subprocess.check_call(scrape_cmd_list, cwd="./scrape")
-    subprocess.check_call(picarro_cmd_list, cwd="./picarro")
+    subprocess.check_call(cmd_str.split(), cwd="./base_image")
+    subprocess.check_call(scrape_cmd_str.split(), cwd="./scrape")
+    subprocess.check_call(picarro_cmd_str.split(), cwd="./picarro")
 
     print("\nDeploying Fn functions...\n")
 
