@@ -25,13 +25,13 @@ async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:
 
     try:
         auth_key = headers["authorization"]
+        # Quick and dirty auth key lookup
+        # Load the valid authentication keys from
+        key_data = json.loads(os.environ["VALID_KEYS"])
+        valid_keys = key_data["keys"]
     except KeyError:
         error_str = str(format_exc())
         return Response(ctx=ctx, response_data=error_str)
-
-    # Quick and dirty auth key lookup
-    # Load the valid authentication keys from
-    valid_keys = json.loads(os.environ["VALID_KEYS"])
 
     if auth_key not in valid_keys:
         ctx.SetResponseHeaders({"Authorisation": "Denied"}, 403)

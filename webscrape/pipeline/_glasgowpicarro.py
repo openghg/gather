@@ -13,7 +13,7 @@ def run_glasgow_picarro(data: bytes) -> Dict:
     """
     # TODO - we should just be able to put the bytes into an io buffer and pass that to
     # through really, for now we'll just write to a temporary file
-    datapath = Path("/tmp/temp_glasgow_data/latest_data.csv")
+    datapath = Path("/tmp/glasgow_picarro_latestcsv")
     datapath.write_bytes(data)
 
     process_pipeline(filepath=datapath)

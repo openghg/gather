@@ -17,7 +17,7 @@ def scrape_handler(args: Dict):
     Returns:
         Dict: Dictionary of results of processing
     """
-    from webscrape.pipeline import run_aqmesh, run_beaco2n, run_glasgow_picarro
+    from webscrape.pipeline import run_aqmesh, run_beaco2n
 
     # Clone the repo and read in the data, this means we'll just update
     # the data that's processed correctly.
@@ -82,8 +82,6 @@ def scrape_handler(args: Dict):
         error_str = str(format_exc())
         result["beaco2n"] = f"Did not run - {error_str}"
         successes["beaco2n"] = False
-
-  
 
     # Update the old data with the newly processed data
     old_combined_data.update(combined_data)

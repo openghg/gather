@@ -1,20 +1,17 @@
-FROM fnproject/python:3.8-dev as build-stage
+FROM fnproject/python:3.8.5
 
-RUN apt-get update && apt-get install git -y
+RUN apt-get update && apt-get install -y git \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt requirements.txt
 
-RUN pip3 install --upgrade pip wheel setuptools && \
-    pip3 install --target /python/ -r requirements.txt && \
-    pip3 install --target /python/ git+https://github.com/openghg/openghg.git@devel#egg=openghg && \
-    pip3 install --target /python/ git+https://github.com/openghg/acquire.git@devel#egg=acquire
+RUN pip3 install --upgrade --no-cache-dir pip wheel setuptools && \
+    pip3 install --target /python/ --no-cache-dir -r requirements.txt \ 
+    git+https://github.com/openghg/openghg.git@devel#egg=openghg
 
 COPY webscrape /python/webscrape
 RUN python3 -m compileall /python/webscrape/*
 
-FROM fnproject/python:3.8.5
-
-COPY --from=build-stage /python/ /python/
 ENV PYTHONPATH=/python
 ENV OPENGHG_PATH="/tmp/tmp_store"
 ENV ACQUIRE_HOST="localhost:8080"

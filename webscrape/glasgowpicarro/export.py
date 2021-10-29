@@ -23,7 +23,7 @@ def export_pipeline(
     Returns:
         dict: Dictionary of processed data in JSON format
     """
-    results = search(site="GST", species=species)
+    results = search(site="gst", species=species)
 
     if not results:
         raise ValueError(

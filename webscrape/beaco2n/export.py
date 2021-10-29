@@ -37,7 +37,6 @@ pathType = Union[str, Path]
 def export_pipeline(
     sites: Union[str, List],
     selected_vars: List[str],
-    output_filepath: pathType = None,
     species: List[str] = None,
 ) -> Dict:
     """Retrieve data from the object store and export it to JSON. Pipeline version that
@@ -46,7 +45,6 @@ def export_pipeline(
     Args:
         sites: Site names
         selected_vars: Variables to extract from data such as speices names, e.g. ["co2", "co", "pm"]
-        output_filepath: Filepath for writing data, if not given data will be written to dashboard_data.json
         species: List of species to search for, use may speed up data retrieval.
     Returns:
         dict: Dictionary of processed data in JSON format
@@ -90,7 +88,6 @@ def export(
     json_data = export_pipeline(
         metadata=site_data,
         selected_vars=selected_vars,
-        output_filepath=output_filepath,
         species=species,
     )
 

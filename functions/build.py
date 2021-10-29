@@ -78,13 +78,7 @@ try:
 
     app_name = "openghg_pipeline"
     # Make sure we have an app calld openghg
-    subprocess.run(
-        [
-            "fn",
-            "create",
-            "app",
-        ]
-    )
+    subprocess.run(["fn", "create", "app", app_name])
 
     deploy_cmd = ["fn", "--verbose", "deploy", "--app", app_name, "--local"]
 

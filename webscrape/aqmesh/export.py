@@ -59,7 +59,6 @@ def export(
     """
     json_data = export_pipeline(
         selected_vars=selected_vars,
-        output_filepath=output_filepath,
         species=species,
         sites=sites,
     )
