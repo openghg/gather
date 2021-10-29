@@ -1,0 +1,10 @@
+schema_version: 20180708
+name: scrape
+version: 0.0.44
+runtime: docker
+memory: 2048
+timeout: 120
+triggers:
+- name: scrape
+  type: http
+  source: /web-scrape

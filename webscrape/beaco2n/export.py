@@ -4,22 +4,22 @@ that's expected by the dashboard and then write it to a JSON file.
 
 Usage:
 
-$ python retrieve_export.py <node_data_json> <species to extract> <outfile filename (optional)>
+$ python export.py <node_data_json> <species to extract> <outfile filename (optional)>
 
 for example
 
-$ python retrieve_export.py glasgow_nodes_parsed.json co2 co pm
+$ python export.py glasgow_nodes_parsed.json co2 co pm
 
 This will create a dashboard_data.json file with data from the sites in glasgow_nodes_parsed.json and
 CO2, CO and PM (particulate matter) measurements.
 
 To export to a different filename
 
-$ python retrieve_export.py glasgow_nodes_parsed.json co2 co pm --out my_data_file.json
+$ python export.py glasgow_nodes_parsed.json co2 co pm --out my_data_file.json
 
 For help
 
-$ python retrieve_export.py -h
+$ python export.py -h
 
 """
 from openghg.processing import search
@@ -27,7 +27,7 @@ from openghg.util import to_dashboard
 import argparse
 import json
 from pathlib import Path
-from typing import Dict, List, Iterable, Union
+from typing import Dict, List, Union
 
 __all__ = ["export", "export_pipeline"]
 
@@ -35,7 +35,9 @@ pathType = Union[str, Path]
 
 
 def export_pipeline(
-    sites: Union[str, List], selected_vars: List[str], output_filepath: pathType = None, species: List[str] = None
+    sites: Union[str, List],
+    selected_vars: List[str],
+    species: List[str] = None,
 ) -> Dict:
     """Retrieve data from the object store and export it to JSON. Pipeline version that
     expects site metadata as a dict instead of a filepath to JSON.
@@ -43,14 +45,13 @@ def export_pipeline(
     Args:
         sites: Site names
         selected_vars: Variables to extract from data such as speices names, e.g. ["co2", "co", "pm"]
-        output_filepath: Filepath for writing data, if not given data will be written to dashboard_data.json
         species: List of species to search for, use may speed up data retrieval.
     Returns:
         dict: Dictionary of processed data in JSON format
     """
     if not isinstance(sites, list):
         sites = [sites]
-    
+
     results = search(site=sites, species=species)
 
     if not results:
@@ -66,7 +67,10 @@ def export_pipeline(
 
 
 def export(
-    json_path: Union[str, Path], selected_vars: List[str], output_filepath: str, species: List[str] = None
+    json_path: Union[str, Path],
+    selected_vars: List[str],
+    output_filepath: str,
+    species: List[str] = None,
 ) -> None:
     """Retrieve data from the object store and export it to JSON.
 
@@ -82,7 +86,9 @@ def export(
     site_data = json.loads(json_path.read_text())
 
     json_data = export_pipeline(
-        metadata=site_data, selected_vars=selected_vars, output_filepath=output_filepath, species=species
+        metadata=site_data,
+        selected_vars=selected_vars,
+        species=species,
     )
 
     with open(output_filepath, "w") as f:
@@ -101,7 +107,8 @@ if __name__ == "__main__":
         type=str,
     )
     parser.add_argument(
-        "outfile", help="filename for JSON data, if not given data is written to dashboard_data.json"
+        "outfile",
+        help="filename for JSON data, if not given data is written to dashboard_data.json",
     )
     parser.add_argument("--species", help="species to retrieve")
 
@@ -112,6 +119,9 @@ if __name__ == "__main__":
     outfile = args.outfile
     species = args.species
 
-    retrieve_export(
-        json_path=json_path, selected_vars=selected_vars, output_filename=outfile, species=species
+    export(
+        json_path=json_path,
+        selected_vars=selected_vars,
+        output_filename=outfile,
+        species=species,
     )

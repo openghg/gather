@@ -103,3 +103,4 @@ cython_debug/
 # Repo speciic files
 scrape_log.txt
 notebooks/*
+.vscode

@@ -46,20 +46,24 @@ def process_beaco2n_pipeline(
         site_name = split[1]
 
         if len(split) > 2 or not site_id.isdigit():
-            print(f"Skipping file {filepath} as it doesn't have the filename we expect.")
+            print(
+                f"Skipping file {filepath} as it doesn't have the filename we expect."
+            )
             continue
-            
+
         # Lookup the site metadata
-        network = "beaco2n"
-        site_metadata = metadata[network][site_name]
+        site_metadata = metadata[site_name]
 
         site_id_meta = str(site_metadata["id"])
         inlet = site_metadata["magl"]
         # Instrument name taken from http://beacon.berkeley.edu/metadata/
         instrument = "shinyei"
+        network = "beaco2n"
 
         if site_id != site_id_meta:
-            raise ValueError(f"Mismatch between read site ID ({site_id}) and metadata ID ({site_id_meta})")
+            raise ValueError(
+                f"Mismatch between read site ID ({site_id}) and metadata ID ({site_id_meta})"
+            )
         try:
             result = ObsSurface.read_file(
                 filepath=filepath,
@@ -72,14 +76,16 @@ def process_beaco2n_pipeline(
 
             results[filename] = result
         except ValueError:
-            # If there's no change to the available data we'll get a 
+            # If there's no change to the available data we'll get a
             # "This file has been uploaded previously with the filename" error so catch that here
             results[filename] = "No change to data"
 
     return results
 
 
-def process_beaco2n(data_path: pathType, json_path: pathType, extension: str = ".csv") -> Dict[str, Dict]:
+def process_beaco2n(
+    data_path: pathType, json_path: pathType, extension: str = ".csv"
+) -> Dict[str, Dict]:
     """Helper function to process BEACO2N data scraped from their website.
     This expects data in a CSV format direct from the site. We also require
     a JSON file containing the metadata for each site.
@@ -93,7 +99,9 @@ def process_beaco2n(data_path: pathType, json_path: pathType, extension: str = "
     """
     metadata = json.loads(Path(json_path).read_text())
 
-    return process_beaco2n_pipeline(data_path=data_path, metadata=metadata, extension=extension)
+    return process_beaco2n_pipeline(
+        data_path=data_path, metadata=metadata, extension=extension
+    )
 
 
 if __name__ == "__main__":

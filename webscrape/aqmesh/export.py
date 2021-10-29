@@ -1,7 +1,8 @@
-from typing import List, Dict, Iterable, Union
+from typing import List, Dict, Union
 from pathlib import Path
 from openghg.processing import search
 from openghg.util import to_dashboard
+import json
 
 __all__ = ["export_pipeline", "export"]
 
@@ -11,7 +12,6 @@ pathType = Union[str, Path]
 def export_pipeline(
     species: Union[str, List],
     selected_vars: List[str],
-    output_filepath: pathType = None,
     sites: List[str] = None,
 ) -> Dict:
     """Retrieve data from the object store and export it to JSON. Pipeline version that
@@ -20,7 +20,6 @@ def export_pipeline(
     Args:
         species: List of species to search for
         selected_vars: Variables to extract from data such as speices names, e.g. ["co2", "co", "pm"]
-        output_filepath: Filepath for writing data, if not given data will be written to dashboard_data.json
         sites: Site list, use if you only want specific site data output
     Returns:
         dict: Dictionary of processed data in JSON format
@@ -43,7 +42,10 @@ def export_pipeline(
 
 
 def export(
-    species: Union[str, List], selected_vars: List[str], output_filepath: str, sites: List[str] = None
+    species: Union[str, List],
+    selected_vars: List[str],
+    output_filepath: str,
+    sites: List[str] = None,
 ) -> None:
     """Retrieve data from the object store and export it to JSON.
 
@@ -55,11 +57,10 @@ def export(
     Returns:
         None
     """
-    json_path = Path(json_path)
-    site_data = json.loads(json_path.read_text())
-
     json_data = export_pipeline(
-        sites=sites, selected_vars=selected_vars, output_filepath=output_filepath, species=species
+        selected_vars=selected_vars,
+        species=species,
+        sites=sites,
     )
 
     with open(output_filepath, "w") as f:

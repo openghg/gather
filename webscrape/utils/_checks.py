@@ -4,6 +4,7 @@ import pandas as pd
 
 __all__ = ["is_date", "is_nan"]
 
+
 def is_date(date: str) -> str:
     """Functional but pretty limited"""
     try:
@@ -24,4 +25,3 @@ def is_nan(data: Union[int, float]) -> Union[str, float, int]:
             return round(data, 3)
     except TypeError as e:
         print(data, e)
-

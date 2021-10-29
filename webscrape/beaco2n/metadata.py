@@ -18,10 +18,7 @@ $ python extract_site_data.py <filepath_to_csv>
 from addict import Dict as aDict
 import json
 import pandas as pd
-from collections import defaultdict
-import math
 import argparse
-import numpy as np
 from pathlib import Path
 from typing import Dict, Union
 
@@ -41,13 +38,10 @@ def parse_metadata(metadata_filepath: Union[str, Path], pipeline: bool = False) 
         dict: Dictionary of site metadata
     """
     metadata_filepath = Path(metadata_filepath).resolve()
-    site_data = pd.read_csv(metadata_filepath)
+    raw_metadata = pd.read_csv(metadata_filepath)
 
-    network = "beaco2n"
-    metadata = aDict()
-    site_metadata = metadata[network]
-
-    for index, row in site_data.iterrows():
+    site_metadata = aDict()
+    for index, row in raw_metadata.iterrows():
         site_name = row["node_name_long"].lower().replace(" ", "")
         site_data = site_metadata[site_name]
 
@@ -61,7 +55,7 @@ def parse_metadata(metadata_filepath: Union[str, Path], pipeline: bool = False) 
         site_data["node_folder_id"] = row["node_folder_id"]
 
     # Convert to a normal dict
-    metadata = metadata.to_dict()
+    metadata = site_metadata.to_dict()
 
     if not pipeline:
         output_filepath = f"{str(metadata_filepath.stem)}_parsed.json"
