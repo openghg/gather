@@ -25,6 +25,9 @@ async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:
 
     try:
         auth_key = headers["authorization"]
+        # There's no point doing all the processing just find we
+        # don't have a token
+        _ = os.environ["GIT_TOKEN"]
         # Quick and dirty auth key lookup
         # Load the valid authentication keys from
         key_data = json.loads(os.environ["VALID_KEYS"])
