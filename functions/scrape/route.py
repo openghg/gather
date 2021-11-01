@@ -5,7 +5,7 @@ from traceback import format_exc
 import json
 import os
 
-from webscrape.pipeline import scrape_handler
+from webscrape.handlers import scrape_handler
 
 
 async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:
