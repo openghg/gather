@@ -41,8 +41,6 @@ def data_handler(data: bytes) -> Dict:
         error_str = str(format_exc())
         result["glasgow_picarro"] = f"Did not run - {error_str}"
 
-    old_combined_data.update(combined_data)
-
     # Update the old data with the newly processed data
     old_combined_data.update(combined_data)
 

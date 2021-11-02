@@ -33,6 +33,13 @@ def crds_handler(data: bytes) -> Dict:
     try:
         # We just expect Glasgow data for now
         glasgow_data = run_crds(data=data)
+
+        # TODO - hacky - move this into the processing
+        location_data = {"latitude": 56.0451, "longitude": -4.3724}
+
+        glasgow_data["cop26"]["co2"]["kvh"]["metadata"].update(location_data)
+        glasgow_data["cop26"]["ch4"]["kvh"]["metadata"].update(location_data)
+
         combined_data.update(glasgow_data)
 
         now_str = str(Timestamp.now())
@@ -40,8 +47,6 @@ def crds_handler(data: bytes) -> Dict:
     except Exception:
         error_str = str(format_exc())
         result["glasgow_picarro"] = f"Did not run - {error_str}"
-
-    old_combined_data.update(combined_data)
 
     # Update the old data with the newly processed data
     old_combined_data.update(combined_data)
