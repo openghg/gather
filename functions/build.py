@@ -81,6 +81,7 @@ try:
 
     subprocess.check_call(deploy_cmd, cwd="./scrape")
     subprocess.check_call(deploy_cmd, cwd="./picarro")
+    subprocess.check_call(deploy_cmd, cwd="./crds")
 except subprocess.CalledProcessError as e:
     print(f"Error - {str(e)}")
 finally:
