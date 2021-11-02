@@ -54,25 +54,22 @@ except FileExistsError:
 
 # A tag for the image
 tag = args.tag
-tag_str = ":".join(("openghg/pipeline-base", tag))
 
 # build the file
-cmd_str = f"docker build --tag {tag_str} ."
-scrape_cmd_str = "docker build --tag openghg/scrape-fn:latest ."
-picarro_cmd_str = "docker build --tag openghg/picarro-fn:latest ."
+base_cmd = f"docker build --tag openghg/pipeline-base:{tag} ."
+scrape_cmd = f"docker build --tag openghg/scrape-fn:{tag} ."
+picarro_cmd = f"docker build --tag openghg/picarro-fn:{tag} ."
+crds_cmd = f"docker build --tag openghg/crds-fn:{tag} ."
 
 if args.nocache:
-    cmd_str += " --no-cache"
-
-base_cmd_list = cmd_str.split()
-scrape_cmd_list = scrape_cmd_str.split()
-picarro_cmd_list = picarro_cmd_str.split()
+    base_cmd += " --no-cache"
 
 try:
     # Build the base image first
-    subprocess.check_call(base_cmd_list, cwd="./base_image")
-    subprocess.check_call(scrape_cmd_list, cwd="./scrape")
-    subprocess.check_call(picarro_cmd_list, cwd="./picarro")
+    subprocess.check_call(base_cmd.split(), cwd="./base_image")
+    subprocess.check_call(scrape_cmd.split(), cwd="./scrape")
+    subprocess.check_call(picarro_cmd.split(), cwd="./picarro")
+    subprocess.check_call(crds_cmd.split(), cwd="./crds")
 
     print("\nDeploying Fn functions...\n")
 

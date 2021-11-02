@@ -1,0 +1,28 @@
+from openghg.modules import ObsSurface
+from typing import Dict, Union
+from pathlib import Path
+
+pathType = Union[str, Path]
+
+__all__ = ["process_pipeline"]
+
+
+def process_pipeline(filepath: pathType) -> Dict:
+    """Process the data from the Killearn Village Hall instrument"""
+    filepath = Path(filepath)
+    filename = filepath.name
+
+    results = {}
+
+    try:
+        results[filename] = ObsSurface.read_file(
+            filepath=filepath,
+            data_type="CRDS",
+            network="COP26",
+            site="KVH",
+            inlet="30m"
+        )
+    except ValueError:
+        results[filename] = "No change to data"
+
+    return results

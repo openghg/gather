@@ -5,7 +5,7 @@ from traceback import format_exc
 import json
 import os
 
-from webscrape.handlers import scrape_handler
+from webscrape.handlers import crds_handler
 
 
 async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:
@@ -24,17 +24,15 @@ async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:
     headers = ctx.Headers()
 
     try:
+        auth_key = headers["authorization"]
         # There's no point doing all the processing just find we
         # don't have a token
         _ = os.environ["GIT_TOKEN"]
-        # Get the authorization headers
-        auth_key = headers["authorization"]
-        # Read valid keys JSON from env variable
+        # Quick and dirty auth key lookup
+        # Load the valid authentication keys from
         key_data = json.loads(os.environ["VALID_KEYS"])
         valid_keys = key_data["keys"]
-        # Read args
-        post_data = json.loads(data.getvalue())
-    except Exception:
+    except KeyError:
         error_str = str(format_exc())
         return Response(ctx=ctx, response_data=error_str)
 
@@ -42,7 +40,7 @@ async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:
         ctx.SetResponseHeaders({"Authorisation": "Denied"}, 403)
         return Response(ctx=ctx)
 
-    # This handles the calls to each of the network pipelines
-    result = scrape_handler(args=post_data)
+    raw_data = data.getvalue()
+    result = crds_handler(data=raw_data)
 
     return Response(ctx=ctx, response_data=result)

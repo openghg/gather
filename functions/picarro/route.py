@@ -38,7 +38,7 @@ async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:
 
     if auth_key not in valid_keys:
         ctx.SetResponseHeaders({"Authorisation": "Denied"}, 403)
-        return Response(ctx=ctx, response_data=error_str)
+        return Response(ctx=ctx)
 
     raw_data = data.getvalue()
     result = data_handler(data=raw_data)

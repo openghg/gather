@@ -1,0 +1,4 @@
+pytest
+pytest-requests
+black
+flake8

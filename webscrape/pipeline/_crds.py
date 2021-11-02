@@ -1,9 +1,11 @@
 from pathlib import Path
 from typing import Dict
-from webscrape.glasgowpicarro import export_pipeline, process_pipeline
+from webscrape.crds import export_pipeline, process_pipeline
+
+__all__ = ["run_crds"]
 
 
-def run_glasgow_picarro(data: bytes) -> Dict:
+def run_crds(data: bytes) -> Dict:
     """Process the Glasgow Picarro data
 
     Args:
@@ -13,7 +15,7 @@ def run_glasgow_picarro(data: bytes) -> Dict:
     """
     # TODO - we should just be able to put the bytes into an io buffer and pass that to
     # through really, for now we'll just write to a temporary file
-    datapath = Path("/tmp/glasgow_picarro_latest.csv")
+    datapath = Path("/tmp/kvh.picarro.hourly.30m.dat")
     datapath.write_bytes(data)
 
     process_pipeline(filepath=datapath)

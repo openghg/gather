@@ -1,0 +1,10 @@
+schema_version: 20180708
+name: crds
+version: 0.0.13
+runtime: docker
+memory: 2048
+timeout: 120
+triggers:
+- name: scrape
+  type: http
+  source: /crds
