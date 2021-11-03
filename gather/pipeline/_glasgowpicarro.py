@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict
-from webscrape.glasgowpicarro import export_pipeline, process_pipeline
+from gather.glasgowpicarro import export_pipeline, process_pipeline
 
 
 def run_glasgow_picarro(data: bytes) -> Dict:

@@ -6,12 +6,12 @@ from traceback import format_exc
 import os
 import json
 
-from webscrape.pipeline import run_crds
+from gather.pipeline import run_glasgow_picarro
 
-__all__ = ["crds_handler"]
+__all__ = ["data_handler"]
 
 
-def crds_handler(data: bytes) -> Dict:
+def data_handler(data: bytes) -> Dict:
     """Handle binary data being curled to our endpoint"""
     # Clone the repo and read in the data, this means we'll just update
     # the data that's processed correctly.
@@ -32,18 +32,11 @@ def crds_handler(data: bytes) -> Dict:
     # Glasgow Science Tower Picarro
     try:
         # We just expect Glasgow data for now
-        glasgow_data = run_crds(data=data)
-
-        # TODO - hacky - move this into the processing
-        location_data = {"latitude": 56.0451, "longitude": -4.3724}
-
-        glasgow_data["cop26"]["co2"]["kvh"]["metadata"].update(location_data)
-        glasgow_data["cop26"]["ch4"]["kvh"]["metadata"].update(location_data)
-
+        glasgow_data = run_glasgow_picarro(data=data)
         combined_data.update(glasgow_data)
 
         now_str = str(Timestamp.now())
-        result["glasgow_picarro"] = f"KVH run success at - {now_str}"
+        result["glasgow_picarro"] = f"Glasgow Picarro run success at - {now_str}"
     except Exception:
         error_str = str(format_exc())
         result["glasgow_picarro"] = f"Did not run - {error_str}"
@@ -60,9 +53,7 @@ def crds_handler(data: bytes) -> Dict:
 
     # Now we do the commit
     commit_time = str(Timestamp.now())
-    commit_message = (
-        f"Automated commit of Killearn Village Hall data at {commit_time}"
-    )
+    commit_message = f"Automated commit of Glasgow Science Tower Picarro data at {commit_time}"
 
     try:
         repo.index.add(file_list)

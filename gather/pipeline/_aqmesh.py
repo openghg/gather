@@ -2,7 +2,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Dict, List, Union, Set
 
-from webscrape.aqmesh import scrape_data, process_pipeline, export_pipeline
+from gather.aqmesh import scrape_data, process_pipeline, export_pipeline
 
 pathType = Union[str, Path]
 

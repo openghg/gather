@@ -5,7 +5,7 @@ import zipfile
 from io import BytesIO
 from collections import defaultdict
 
-from webscrape.utils import download, load_json
+from gather.utils import download, load_json
 
 pathType = Union[str, Path]
 

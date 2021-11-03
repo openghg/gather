@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Dict
-from webscrape.crds import export_pipeline, process_pipeline
+from gather.crds import export_pipeline, process_pipeline
 
 __all__ = ["run_crds"]
 

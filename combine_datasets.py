@@ -1,5 +1,5 @@
 import argparse
-from webscrape.utils import combine_networks
+from gather.utils import combine_networks
 
 if __name__ == "__main__":
     example_text = """Usage:
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     """
 
     parser = argparse.ArgumentParser(
-        prog="OpenGHG webscrape dataset combining tool",
+        prog="OpenGHG gather dataset combining tool",
         description="Script to allow the easy concatenation of JSON format datasets into a single JSON file",
         epilog=example_text,
         formatter_class=argparse.RawDescriptionHelpFormatter,

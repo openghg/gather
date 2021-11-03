@@ -3,8 +3,8 @@ import subprocess
 
 
 try:
-    # Copy webscrape to this directory
-    shutil.copytree("../../webscrape", "webscrape/")
+    # Copy gather to this directory
+    shutil.copytree("../../gather", "gather/")
 except FileExistsError:
     pass
 
@@ -15,4 +15,4 @@ try:
 except Exception:
     raise
 finally:
-    shutil.rmtree("webscrape")
+    shutil.rmtree("gather")

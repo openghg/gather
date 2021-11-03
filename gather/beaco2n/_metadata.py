@@ -22,7 +22,7 @@ import argparse
 from pathlib import Path
 from typing import Dict, Union
 
-from webscrape.utils import is_date, is_nan
+from gather.utils import is_date, is_nan
 
 __all__ = ["parse_metadata"]
 

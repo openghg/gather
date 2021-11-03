@@ -4,7 +4,7 @@ import subprocess
 
 
 def cleanup():
-    shutil.rmtree("./base_image/webscrape")
+    shutil.rmtree("./base_image/gather")
 
 
 parser = argparse.ArgumentParser(
@@ -47,8 +47,8 @@ args = parser.parse_args()
 
 
 try:
-    # Copy webscrape to this directory
-    shutil.copytree("../webscrape", "./base_image/webscrape")
+    # Copy gather to this directory
+    shutil.copytree("../gather", "./base_image/gather")
 except FileExistsError:
     pass
 

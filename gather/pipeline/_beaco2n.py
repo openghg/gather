@@ -2,12 +2,12 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Dict, List, Union
 
-from webscrape.beaco2n import (
+from gather.beaco2n import (
     scrape_data_pipeline,
     process_beaco2n_pipeline,
     export_pipeline,
 )
-from webscrape.utils import load_json
+from gather.utils import load_json
 from copy import deepcopy
 
 pathType = Union[str, Path]

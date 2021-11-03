@@ -17,7 +17,7 @@ def scrape_handler(args: Dict):
     Returns:
         Dict: Dictionary of results of processing
     """
-    from webscrape.pipeline import run_aqmesh, run_beaco2n
+    from gather.pipeline import run_aqmesh, run_beaco2n
 
     # Clone the repo and read in the data, this means we'll just update
     # the data that's processed correctly.
