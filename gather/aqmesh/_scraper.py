@@ -46,7 +46,8 @@ def scrape_data(species: List[str], download_path: pathType) -> Dict[str, List]:
         datafile = next((s for s in filenames if "dataset" in s.lower()), None)
         metadata_file = next((s for s in filenames if "metadata" in s.lower()), None)
 
-        extracted_files[species]["data"] = download_path.joinpath(datafile)
-        extracted_files[species]["metadata"] = download_path.joinpath(metadata_file)
+        species_lower = species.lower()
+        extracted_files[species_lower]["data"] = download_path.joinpath(datafile)
+        extracted_files[species_lower]["metadata"] = download_path.joinpath(metadata_file)
 
     return extracted_files

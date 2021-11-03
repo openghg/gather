@@ -1,19 +1,12 @@
-from gather.aqmesh import scrape_data
-from requests_mock import ANY
-# from pandas import Timestamp
 from pathlib import Path
-import pytest
 
 
-@pytest.fixture(scope="session")
-def mock_return():
-    return {"some": "json"}
+def test_scrape(scraper_setup, tmpdir):
+    data = Path(scraper_setup["co2"]["data"])
+    metadata = Path(scraper_setup["co2"]["metadata"])
 
+    assert data.exists()
+    assert metadata.exists()
 
-def test_retrieve_met(requests_mock):
-    test_data_path = Path("../data/aqmesh/test_data.zip")
-    binary_data = test_data_path.read_bytes()
-
-    requests_mock.get(ANY, content=binary_data, status_code=200)
-
-    scrape_data()
+    assert data.name == "20210515_20211024_CO2_AQMesh_Scaled_Dataset_PPM.csv"
+    assert metadata.name == "20210515_20211024_CO2_pod_metadata.csv"

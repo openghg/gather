@@ -1,6 +1,5 @@
 from addict import Dict as aDict
 from pathlib import Path
-import json
 from typing import Dict, Union
 from pandas import read_csv
 from openghg.util import is_date
@@ -10,7 +9,7 @@ __all__ = ["parse_metadata"]
 pathType = Union[str, Path]
 
 
-def parse_metadata(filepath: pathType, pipeline: bool = False) -> Dict:
+def parse_metadata(filepath: pathType) -> Dict:
     """Parse AQMesh metadata
 
     Args:
@@ -45,11 +44,5 @@ def parse_metadata(filepath: pathType, pipeline: bool = False) -> Dict:
         site_data["sampling_period"] = "NA"
 
     site_metadata = site_metadata.to_dict()
-
-    if not pipeline:
-        output_filepath = f"{str(filepath.stem)}_parsed.json"
-        print(f"\nMetadata written to ./{output_filepath}")
-        with open(output_filepath, "w") as f:
-            json.dump(site_metadata, f, sort_keys=True, indent=4)
 
     return site_metadata

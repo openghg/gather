@@ -1,6 +1,8 @@
 from typing import Dict
 from openghg.modules import ObsSurface
 
+__all__ = ["process_pipeline"]
+
 
 def process_pipeline(extracted_files: Dict) -> Dict[str, Dict]:
     """Process the files downloaded and extracted to the download folder
