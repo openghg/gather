@@ -27,7 +27,7 @@ from gather.utils import is_date, is_nan
 __all__ = ["parse_metadata"]
 
 
-def parse_metadata(metadata_filepath: Union[str, Path], pipeline: bool = False) -> Dict:
+def parse_metadata(metadata_filepath: Union[str, Path]) -> Dict:
     """Parse the metadata file retreived from the BEACO2N site
 
     Args:
@@ -41,27 +41,26 @@ def parse_metadata(metadata_filepath: Union[str, Path], pipeline: bool = False) 
     raw_metadata = pd.read_csv(metadata_filepath)
 
     site_metadata = aDict()
-    for index, row in raw_metadata.iterrows():
-        site_name = row["node_name_long"].lower().replace(" ", "")
-        site_data = site_metadata[site_name]
+    try:
+        for index, row in raw_metadata.iterrows():
+            site_name = row["node_name_long"].lower().replace(" ", "")
+            site_data = site_metadata[site_name]
 
-        site_data["long_name"] = row["node_name_long"]
-        site_data["id"] = row["id"]
-        site_data["latitude"] = round(row["lat"], 5)
-        site_data["longitude"] = round(row["lng"], 5)
-        site_data["magl"] = is_nan(row["height_above_ground"])
-        site_data["masl"] = is_nan(row["height_above_sea"])
-        site_data["deployed"] = is_date(row["deployed"])
-        site_data["node_folder_id"] = row["node_folder_id"]
+            site_data["long_name"] = row["node_name_long"]
+            site_data["id"] = row["id"]
+            site_data["latitude"] = round(row["lat"], 5)
+            site_data["longitude"] = round(row["lng"], 5)
+            site_data["magl"] = is_nan(row["height_above_ground"])
+            site_data["masl"] = is_nan(row["height_above_sea"])
+            site_data["deployed"] = is_date(row["deployed"])
+            site_data["node_folder_id"] = row["node_folder_id"]
+    except Exception as e:
+        raise ValueError(f"Can't read metadata file, please ensure it has expected columns. Error: {e}")
+
+    
 
     # Convert to a normal dict
     metadata = site_metadata.to_dict()
-
-    if not pipeline:
-        output_filepath = f"{str(metadata_filepath.stem)}_parsed.json"
-        print(f"\nMetadata written to ./{output_filepath}")
-        with open(output_filepath, "w") as f:
-            json.dump(metadata, f, sort_keys=True, indent=4)
 
     return metadata
 

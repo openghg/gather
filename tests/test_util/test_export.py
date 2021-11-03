@@ -1,8 +1,8 @@
 from gather.aqmesh import process_pipeline, export_pipeline
 
 
-def test_export(scraper_setup):
-    process_pipeline(extracted_files=scraper_setup)
+def test_export(aqmesh_scraper_setup):
+    process_pipeline(extracted_files=aqmesh_scraper_setup)
 
     exported_data = export_pipeline(species=["co2"], selected_vars=["co2"])
 
@@ -42,4 +42,3 @@ def test_export(scraper_setup):
     }
 
     assert exported_data == expected
-

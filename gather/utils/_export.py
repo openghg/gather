@@ -19,7 +19,8 @@ def export_pipeline(
 
     Args:
         species: List of species to search for
-        selected_vars: Variables to extract from data such as species names, e.g. ["co2", "co", "pm"]
+        selected_vars: Variables to extract from data such as species names, e.g. ["co2", "co", "pm"].
+        If this isn't given the species will be used as the selected variables on export.
         sites: Site list, use if you only want specific site data output
     Returns:
         dict: Dictionary of processed data in JSON format
@@ -73,29 +74,3 @@ def export(
         json.dump(json_data, f)
 
     print(f"Data written to {output_filepath}")
-
-
-# if __name__ == "__main__":
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("species", help="species to export", type=str)
-#     parser.add_argument(
-#         "vars",
-#         help="variables to extract from DataFrame e.g. co2",
-#         nargs="*",
-#         type=str,
-#     )
-#     parser.add_argument(
-#         "outfile", help="filename for JSON data, if not given data is written to dashboard_data.json"
-#     )
-#     parser.add_argument(
-#         "--species", help=""
-#     )
-
-#     args = parser.parse_args()
-
-#     sites = args.sites
-#     selected_vars = args.vars
-#     outfile = args.outfile
-#     species = args.species
-
-#     export

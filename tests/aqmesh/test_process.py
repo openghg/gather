@@ -11,8 +11,8 @@ def mock_uuid(monkeypatch):
     monkeypatch.setattr(uuid, "uuid4", mock_uuid)
 
 
-def test_process(scraper_setup, tmpdir, mock_uuid):
-    datapaths = scraper_setup
+def test_process(aqmesh_scraper_setup, tmpdir, mock_uuid):
+    datapaths = aqmesh_scraper_setup
 
     res = process_pipeline(extracted_files=datapaths)
 

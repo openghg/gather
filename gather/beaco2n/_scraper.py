@@ -30,30 +30,30 @@ __all__ = ["scrape_data", "scrape_data_pipeline"]
 pathType = Union[str, Path]
 
 
-def scrape_data(metadata_filepath: pathType, output_directory: pathType = None) -> None:
+def scrape_data(metadata_filepath: pathType, download_path: pathType = None) -> None:
     """Download data from the BEACO2N website for sites given in the metadata file
 
     Args:
         metadata_filepath: Path to metadata file, this must contain the site codes
-        output_directory: Folder to write data out
+        download_path: Folder to write data out
     Returns:
         None
     """
     with open(metadata_filepath, "r") as f:
         site_metadata = json.load(f)
 
-    scrape_data_pipeline(metadata=site_metadata, output_directory=output_directory)
+    scrape_data_pipeline(metadata=site_metadata, download_path=download_path)
 
 
-def scrape_data_pipeline(metadata: Dict, output_directory: pathType = None) -> None:
+def scrape_data_pipeline(metadata: Dict, download_path: pathType = None) -> Dict:
     """Download data from the BEACO2N website. This version expects a dictionary of metadata instead
     of the path to the metadata JSON
 
     Args:
         metadata: Metadata read from JSON
-        output_directory: Folder to write data out
+        download_path: Folder to write data out
     Returns:
-        None
+        dict: Dictionary of node numbers and written filepaths
     """
     # This is just the current datetime in ISO format to the nearest second
     end_date = pd.Timestamp.now().round("1s").isoformat(" ").replace(" ", "%20")
@@ -61,6 +61,8 @@ def scrape_data_pipeline(metadata: Dict, output_directory: pathType = None) -> N
     # tqdm here just decorates the dictionary so we can track
     # the iteration process for the progress bar
     site_metadata_pbar = tqdm(metadata.items())
+
+    written_files = {}
 
     for node_name, data in site_metadata_pbar:
         site_metadata_pbar.set_description(f"Getting data for {node_name}")
@@ -81,17 +83,18 @@ def scrape_data_pipeline(metadata: Dict, output_directory: pathType = None) -> N
         print(f"\nGetting: {url}\n")
 
         data = download(url=url)
-        filename = f"{node_number}_{node_name}.csv"
 
-        if output_directory is not None:
-            output_filepath = Path(output_directory).joinpath(filename)
-        else:
-            output_filepath = filename
+        filename = f"{node_number}_{node_name}.csv"
+        output_filepath = Path(download_path).joinpath(filename)
 
         with open(output_filepath, "wb") as f:
             f.write(data)
 
+        written_files[str(node_number)] = output_filepath
+
         time.sleep(2)
+
+    return written_files
 
 
 if __name__ == "__main__":

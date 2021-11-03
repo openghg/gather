@@ -1,9 +1,9 @@
 from pathlib import Path
 
 
-def test_scrape(scraper_setup, tmpdir):
-    data = Path(scraper_setup["co2"]["data"])
-    metadata = Path(scraper_setup["co2"]["metadata"])
+def test_scrape(aqmesh_scraper_setup, tmpdir):
+    data = Path(aqmesh_scraper_setup["co2"]["data"])
+    metadata = Path(aqmesh_scraper_setup["co2"]["metadata"])
 
     assert data.exists()
     assert metadata.exists()
