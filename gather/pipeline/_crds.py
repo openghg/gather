@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Dict
-from gather.crds import export_pipeline, process_pipeline
+from gather.crds import process_pipeline
+from gather.utils import export_pipeline
+
 
 __all__ = ["run_crds"]
 
@@ -19,6 +21,6 @@ def run_crds(data: bytes) -> Dict:
     datapath.write_bytes(data)
 
     process_pipeline(filepath=datapath)
-    processed_data = export_pipeline()
+    processed_data = export_pipeline(species=["ch4", "co2"], sites=["kvh"])
 
     return processed_data

@@ -22,7 +22,7 @@ import argparse
 from pathlib import Path
 from typing import Dict, Union
 
-from gather.utils import is_date, is_nan
+from gather.utils import check_date, check_nan
 
 __all__ = ["parse_metadata"]
 
@@ -41,6 +41,7 @@ def parse_metadata(metadata_filepath: Union[str, Path]) -> Dict:
     raw_metadata = pd.read_csv(metadata_filepath)
 
     site_metadata = aDict()
+
     try:
         for index, row in raw_metadata.iterrows():
             site_name = row["node_name_long"].lower().replace(" ", "")
@@ -50,17 +51,15 @@ def parse_metadata(metadata_filepath: Union[str, Path]) -> Dict:
             site_data["id"] = row["id"]
             site_data["latitude"] = round(row["lat"], 5)
             site_data["longitude"] = round(row["lng"], 5)
-            site_data["magl"] = is_nan(row["height_above_ground"])
-            site_data["masl"] = is_nan(row["height_above_sea"])
-            site_data["deployed"] = is_date(row["deployed"])
+            site_data["magl"] = check_nan(row["height_above_ground"])
+            site_data["masl"] = check_nan(row["height_above_sea"])
+            site_data["deployed"] = check_date(row["deployed"])
             site_data["node_folder_id"] = row["node_folder_id"]
     except Exception as e:
         raise ValueError(f"Can't read metadata file, please ensure it has expected columns. Error: {e}")
 
-    
-
     # Convert to a normal dict
-    metadata = site_metadata.to_dict()
+    metadata: Dict = site_metadata.to_dict()
 
     return metadata
 

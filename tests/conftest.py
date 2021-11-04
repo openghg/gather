@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 from gather.aqmesh import scrape_data as aqmesh_scraper
-from gather.beaco2n import scrape_data_pipeline as beaco2n_scraper
+from gather.beaco2n import scrape_data as beaco2n_scraper
 
 sys.path.insert(0, "..")
 
@@ -80,11 +80,14 @@ def beaco2n_intercept(requests_mock):
         status_code=200,
     )
 
+
 @pytest.fixture
 def beaco2n_scraper_setup(beaco2n_intercept, tmpdir):
     download_path = str(tmpdir)
 
     test_data_folder = Path(__file__).parent.joinpath("data/beaco2n")
-    metadata_filepath = test_data_folder.joinpath("test_metadata.csv")
+    metadata_filepath = test_data_folder.joinpath("parsed_metadata.json")
 
-    return beaco2n_scraper(metadata=metadata_filepath, download_path=download_path)
+    return beaco2n_scraper(
+        metadata_filepath=metadata_filepath, download_path=download_path
+    )

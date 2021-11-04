@@ -2,11 +2,20 @@ from typing import Union
 import math
 import pandas as pd
 
-__all__ = ["is_date", "is_nan"]
+__all__ = ["check_date", "check_nan"]
 
 
-def is_date(date: str) -> str:
-    """Functional but pretty limited"""
+def check_date(date: str) -> str:
+    """Check if a date string can be converted to a pd.Timestamp
+    and returns NA if not.
+
+    Returns a string that can be JSON serialised.
+
+    Args:
+        date: String to test
+    Returns:
+        str
+    """
     try:
         d = pd.Timestamp(date)
         if pd.isnull(d):
@@ -17,11 +26,17 @@ def is_date(date: str) -> str:
         return "NA"
 
 
-def is_nan(data: Union[int, float]) -> Union[str, float, int]:
-    try:
-        if math.isnan(data):
-            return "NA"
-        else:
-            return round(data, 3)
-    except TypeError as e:
-        print(data, e)
+def check_nan(data: Union[int, float]) -> Union[str, float, int]:
+    """Check if a number is Nan.
+
+    Returns a string that can be JSON serialised.
+
+    Args:
+        data: Number
+    Returns:
+        str, float, int: Returns NA if not a number else number
+    """
+    if math.isnan(data):
+        return "NA"
+    else:
+        return round(data, 3)

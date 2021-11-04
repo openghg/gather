@@ -1,0 +1,13 @@
+Created:  2 Nov 21 14:55 GMT
+     -      -         -    -       ch4     ch4   ch4       co2     co2   co2        co      co    co 
+  date   time      type port         C   stdev     N         C   stdev     N         C   stdev     N 
+211019 101415       air    0       nan     nan   nan       nan     nan   nan       nan     nan   nan 
+211019 111401       air    0       nan     nan   nan       nan     nan   nan       nan     nan   nan 
+211019 121359       air    0       nan     nan   nan       nan     nan   nan       nan     nan   nan 
+211019 131400       air    0       nan     nan   nan       nan     nan   nan       nan     nan   nan 
+211019 141401       air    0       nan     nan   nan       nan     nan   nan       nan     nan   nan 
+211019 152230       air    0   1979.92   4.300  1057    420.13   0.887  1057    100.16   7.338  1057 
+211019 161400       air    0   1977.54   1.912  1474    419.02   0.458  1474     99.60   7.112  1474 
+211019 171358       air    0   1974.77   1.546  1476    418.27   0.496  1476     98.54   6.798  1476 
+211019 181359       air    0   1973.73   1.461  1472    418.16   0.552  1472     99.29   6.911  1472 
+211019 191359       air    0   1977.96   2.476  1469    418.72   0.541  1469    104.84   7.286  1469 

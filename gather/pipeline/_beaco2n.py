@@ -5,9 +5,8 @@ from typing import Dict, List, Union
 from gather.beaco2n import (
     scrape_data_pipeline,
     process_beaco2n_pipeline,
-    export_pipeline,
 )
-from gather.utils import load_json
+from gather.utils import load_json, export_pipeline
 from copy import deepcopy
 
 pathType = Union[str, Path]
@@ -54,35 +53,23 @@ def run_beaco2n(selected_vars: List, download_path: pathType = None) -> Dict:
         tmpdir = TemporaryDirectory()
         download_path = tmpdir.name
 
-    # TODO - remove these checks for now, not necessary within the serverless pipeline setting
-    # Can add them into another function that wraps this maybe?
-    # # Check to see if we've downloaded the data within the last 6 hours, only useful
-    # # if running this locally
-    # scrape_log = Path("scrape_log.txt")
+    if not isinstance(selected_vars, list):
+        selected_vars = [selected_vars]
 
-    # scrape_complete = False
-    # if scrape_log.exists():
-    #     scrape_time_str = scrape_log.read_text()
-    #     scrape_time = Timestamp(scrape_time_str)
-
-    #     if Timestamp.now() - scrape_time < Timedelta(hours=6.0):
-    #         scrape_complete = True
-
-    # First parse the metadata retrieved from the BEACO2N site
-    # metadata = parse_metadata(metadata_filepath=metadata_filepath, pipeline=True)
+    # Do a quick check to make sure co2 is in the selected vars, for this
+    # network we only have CO2 measurements
+    if not(any(f for f in selected_vars if "co2" in f)):
+        raise ValueError("We can only export CO2 data from BEACO2N.")
 
     # First load the metadata
     metadata = load_json(filename="beaco2n_sites.json")
 
-    # Then we download the data
-    # if not scrape_complete:
-    scrape_data_pipeline(metadata=metadata, output_directory=download_path)
-    # now = str(Timestamp.now())
-    # scrape_log.write_text(now)
+    filepaths = scrape_data_pipeline(metadata=metadata, download_path=download_path)
 
     # Process the data with OpenGHG
-    process_beaco2n_pipeline(data_path=download_path, metadata=metadata)
+    process_beaco2n_pipeline(filepaths=filepaths, metadata=metadata)
 
+    # Here we want to export all the sites
     site_names = list(metadata.keys())
     # Now we can export the processed data in a format expected by the dashboard
     json_data = export_pipeline(sites=site_names, selected_vars=selected_vars)

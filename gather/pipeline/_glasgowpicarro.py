@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Dict
-from gather.glasgowpicarro import export_pipeline, process_pipeline
+from gather.glasgowpicarro import process_pipeline
+from gather.utils import export_pipeline
 
 
 def run_glasgow_picarro(data: bytes) -> Dict:
@@ -17,6 +18,6 @@ def run_glasgow_picarro(data: bytes) -> Dict:
     datapath.write_bytes(data)
 
     process_pipeline(filepath=datapath)
-    processed_data = export_pipeline()
+    processed_data = export_pipeline(species=["co2", "ch4"], sites=["gst"])
 
     return processed_data

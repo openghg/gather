@@ -1,8 +1,16 @@
-from gather.aqmesh import process_pipeline, export_pipeline
+from gather.aqmesh import process_pipeline, scrape_data
+from gather.utils import export_pipeline
+from openghg.objectstore import get_local_bucket
 
 
-def test_export(aqmesh_scraper_setup):
-    process_pipeline(extracted_files=aqmesh_scraper_setup)
+def test_export(aqmesh_co2_intercept, tmpdir):
+    get_local_bucket(empty=True)
+
+    download_path = str(tmpdir)
+
+    species = ["co2"]
+    filepaths = scrape_data(species=species, download_path=download_path)
+    process_pipeline(extracted_files=filepaths)
 
     exported_data = export_pipeline(species=["co2"], selected_vars=["co2"])
 

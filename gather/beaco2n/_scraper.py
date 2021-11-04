@@ -30,19 +30,19 @@ __all__ = ["scrape_data", "scrape_data_pipeline"]
 pathType = Union[str, Path]
 
 
-def scrape_data(metadata_filepath: pathType, download_path: pathType = None) -> None:
+def scrape_data(metadata_filepath: pathType, download_path: pathType = None) -> Dict:
     """Download data from the BEACO2N website for sites given in the metadata file
 
     Args:
         metadata_filepath: Path to metadata file, this must contain the site codes
         download_path: Folder to write data out
     Returns:
-        None
+        dict: Dictionary node_id: filepaths
     """
     with open(metadata_filepath, "r") as f:
         site_metadata = json.load(f)
 
-    scrape_data_pipeline(metadata=site_metadata, download_path=download_path)
+    return scrape_data_pipeline(metadata=site_metadata, download_path=download_path)
 
 
 def scrape_data_pipeline(metadata: Dict, download_path: pathType = None) -> Dict:

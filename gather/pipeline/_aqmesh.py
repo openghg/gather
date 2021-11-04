@@ -2,7 +2,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Dict, List, Union, Set
 
-from gather.aqmesh import scrape_data, process_pipeline, export_pipeline
+from gather.aqmesh import scrape_data, process_pipeline
+from gather.utils import export_pipeline
 
 pathType = Union[str, Path]
 
@@ -11,7 +12,7 @@ __all__ = ["run_aqmesh"]
 
 def run_aqmesh(
     species: Union[str, List],
-    selected_vars: List,
+    selected_vars: List = None,
     download_path: pathType = None,
     sites: List = None,
 ) -> Dict:
@@ -28,6 +29,9 @@ def run_aqmesh(
     """
     if not isinstance(species, list):
         species = [species]
+
+    if selected_vars is None:
+        selected_vars = species
 
     if download_path is None:
         tmpdir = TemporaryDirectory()

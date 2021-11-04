@@ -1,0 +1,32 @@
+{
+  "bellahoustonacademy": {
+    "deployed": "2021-07-15",
+    "id": 175,
+    "latitude": 55.848,
+    "long_name": "Bellahouston Academy",
+    "longitude": -4.301,
+    "magl": "NA",
+    "masl": "NA",
+    "node_folder_id": 932
+  },
+  "glasgows12002": {
+    "deployed": "2021-01-20",
+    "id": 157,
+    "latitude": 55.826,
+    "long_name": "GlasgowS12002",
+    "longitude": -4.226,
+    "magl": "NA",
+    "masl": "NA",
+    "node_folder_id": 872
+  },
+  "hillparksecondaryschool": {
+    "deployed": "2021-07-28",
+    "id": 174,
+    "latitude": 55.815,
+    "long_name": "Hillpark Secondary School",
+    "longitude": -4.299,
+    "magl": "NA",
+    "masl": "NA",
+    "node_folder_id": 931
+  }
+}
