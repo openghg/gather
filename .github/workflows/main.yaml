@@ -44,10 +44,9 @@ jobs:
           python -m pip install --upgrade pip wheel
           pip install flake8
           flake8 gather/ --count --statistics
-      - name: Install gather
+      - name: Install requirements
         run: |
           pip install -r requirements-dev.txt
-          pip install .
       - name: Run mypy
         run: |
           mypy --python-version ${{ matrix.python-version }} gather/
