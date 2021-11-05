@@ -24,6 +24,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=requirements,
+    include_package_data=True,
     package_dir={"": "."},
     packages=setuptools.find_packages(include=["gather", "gather.*"]),
     python_requires=">=3.7",
