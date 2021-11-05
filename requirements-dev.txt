@@ -6,3 +6,4 @@ requests-mock
 black
 flake8
 mypy==0.910
+types-requests

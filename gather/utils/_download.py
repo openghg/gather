@@ -42,6 +42,6 @@ def download(url: str, silent: bool = False) -> bytes:
     http.mount("http://", adapter)
 
     timeout = 20  # seconds
-    data = http.get(url, timeout=timeout).content
+    data: bytes = http.get(url, timeout=timeout).content
 
     return data
