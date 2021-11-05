@@ -1,0 +1,4 @@
+openghg @ git+https://github.com/openghg/openghg@devel#egg=openghg
+requests
+GitPython
+tqdm
