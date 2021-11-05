@@ -25,7 +25,7 @@ setuptools.setup(
     ],
     install_requires=requirements,
     include_package_data=True,
-    package_data={"": ["data/*"]},
+    package_data={"": ["metadata/*"]},
     package_dir={"": "."},
     packages=setuptools.find_packages(include=["gather", "gather.*"]),
     python_requires=">=3.7",
