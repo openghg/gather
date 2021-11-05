@@ -1,6 +1,6 @@
 openghg @ git+https://github.com/openghg/openghg@devel#egg=openghg
+GitPython
 pytest
-pytest-requests
 pytest-cov
 requests-mock
 black
