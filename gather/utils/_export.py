@@ -43,7 +43,7 @@ def export_pipeline(
     if selected_vars is None:
         selected_vars = species
 
-    json_data = to_dashboard(data=data, selected_vars=selected_vars)
+    json_data: Dict = to_dashboard(data=data, selected_vars=selected_vars)
 
     return json_data
 

@@ -1,25 +1,7 @@
-""" This script downloads the data from the sites given in the
-passed metadata file.
-
-Usage:
-
-$ python get_data.py <node_metadata_file>
-
-e.g.
-
-$ python get_data.py glasgow_nodes_parsed.json
-
-This will create a file for each site containing the data from the date the equipment
-was depoyed to the date.
-
-These files can then be processed using the OpenGHG ObsSurface.read_file function
-by passing the data_type as BEACO2N.
-"""
 import pandas as pd
 import time
 from tqdm import tqdm
 import json
-import argparse
 from pathlib import Path
 from typing import Dict, Union
 
@@ -30,7 +12,7 @@ __all__ = ["scrape_data", "scrape_data_pipeline"]
 pathType = Union[str, Path]
 
 
-def scrape_data(metadata_filepath: pathType, download_path: pathType = None) -> Dict:
+def scrape_data(metadata_filepath: pathType, download_path: pathType) -> Dict:
     """Download data from the BEACO2N website for sites given in the metadata file
 
     Args:
@@ -45,7 +27,7 @@ def scrape_data(metadata_filepath: pathType, download_path: pathType = None) -> 
     return scrape_data_pipeline(metadata=site_metadata, download_path=download_path)
 
 
-def scrape_data_pipeline(metadata: Dict, download_path: pathType = None) -> Dict:
+def scrape_data_pipeline(metadata: Dict, download_path: pathType) -> Dict:
     """Download data from the BEACO2N website. This version expects a dictionary of metadata instead
     of the path to the metadata JSON
 
@@ -95,13 +77,3 @@ def scrape_data_pipeline(metadata: Dict, download_path: pathType = None) -> Dict
         time.sleep(2)
 
     return written_files
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("filepath", help="path to site metadata JSON", type=str)
-    args = parser.parse_args()
-
-    filepath = Path(args.filepath)
-
-    scrape_data(metadata_filepath=filepath)

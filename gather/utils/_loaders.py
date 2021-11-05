@@ -17,4 +17,6 @@ def load_json(filename: str) -> Dict:
         Path(__file__).resolve().parent.parent.joinpath("metadata").joinpath(filename)
     )
 
-    return json.loads(filepath.read_text())
+    metadata: Dict = json.loads(filepath.read_text())
+
+    return metadata

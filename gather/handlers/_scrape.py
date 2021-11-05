@@ -9,7 +9,7 @@ import json
 __all__ = ["scrape_handler"]
 
 
-def scrape_handler(args: Dict):
+def scrape_handler(args: Dict) -> Dict:
     """Handles the calling of the pipeline functions
 
     Args:

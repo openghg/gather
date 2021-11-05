@@ -16,7 +16,6 @@ $ python extract_site_data.py <filepath_to_csv>
 
 """
 from addict import Dict as aDict
-import json
 import pandas as pd
 import argparse
 from pathlib import Path

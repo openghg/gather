@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import DefaultDict, Dict, List, Union
 from tqdm import tqdm
 import zipfile
 from io import BytesIO
@@ -32,9 +32,9 @@ def scrape_data(species: List[str], download_path: pathType) -> Dict[str, List]:
     # Extract only the URLs we want to download
     selected_urls = {k.upper(): url_data[k.upper()] for k in species}
 
-    extracted_files = defaultdict(dict)
+    extracted_files: DefaultDict = defaultdict(dict)
     # Here we're download zip files
-    for species, url in tqdm(selected_urls.items()):
+    for sp, url in tqdm(selected_urls.items()):
         zip_bytes = download(url=url)
         # Open the zip file in memory
         zip_file = zipfile.ZipFile(BytesIO(zip_bytes))
@@ -43,10 +43,10 @@ def scrape_data(species: List[str], download_path: pathType) -> Dict[str, List]:
         zip_file.extractall(download_path)
 
         # Extract the data and the metadata filepaths so we can process them more easily
-        datafile = next((s for s in filenames if "dataset" in s.lower()), None)
-        metadata_file = next((s for s in filenames if "metadata" in s.lower()), None)
+        datafile: str = next((s for s in filenames if "dataset" in s.lower()))
+        metadata_file: str = next((s for s in filenames if "metadata" in s.lower()))
 
-        species_lower = species.lower()
+        species_lower = sp.lower()
         extracted_files[species_lower]["data"] = download_path.joinpath(datafile)
         extracted_files[species_lower]["metadata"] = download_path.joinpath(metadata_file)
 

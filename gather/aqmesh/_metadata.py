@@ -43,6 +43,6 @@ def parse_metadata(filepath: pathType) -> Dict:
         site_data["network"] = "aqmesh_glasgow"
         site_data["sampling_period"] = "NA"
 
-    site_metadata = site_metadata.to_dict()
+    to_return: Dict = site_metadata.to_dict()
 
-    return site_metadata
+    return to_return

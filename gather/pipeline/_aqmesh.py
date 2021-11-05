@@ -37,17 +37,6 @@ def run_aqmesh(
         tmpdir = TemporaryDirectory()
         download_path = tmpdir.name
 
-    # # Check to see if we've downloaded the data within the last 6 hours
-    # scrape_log = Path("scrape_log.txt")
-
-    # scrape_complete = False
-    # if scrape_log.exists():
-    #     scrape_time_str = scrape_log.read_text()
-    #     scrape_time = Timestamp(scrape_time_str)
-
-    #     if Timestamp.now() - scrape_time < Timedelta(hours=6.0):
-    #         scrape_complete = True
-
     file_list = scrape_data(species=species, download_path=download_path)
     processing_results = process_pipeline(extracted_files=file_list)
 
@@ -60,10 +49,10 @@ def run_aqmesh(
         sites = [s.lower() for s in sites]
         all_sites = all_sites.intersection(sites)
 
-    all_sites = list(all_sites)
+    site_list = list(all_sites)
 
-    json_data = export_pipeline(
-        species=species, selected_vars=selected_vars, sites=all_sites
+    json_data: Dict = export_pipeline(
+        species=species, selected_vars=selected_vars, sites=site_list
     )
 
     try:

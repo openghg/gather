@@ -1,4 +1,8 @@
+openghg @ git+https://github.com/openghg/openghg@devel#egg=openghg
 pytest
 pytest-requests
+pytest-cov
+requests-mock
 black
 flake8
+mypy==0.910

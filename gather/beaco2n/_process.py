@@ -7,20 +7,18 @@ $ python process_beaco2n.py data_folder/ glasgow_nodes_parsed.json
 This processes all files in data_folder that have matching site names in glasgow_nodes_parsed.json
 
 """
-import argparse
-import json
 from pathlib import Path
 from typing import Dict, Union
 
-__all__ = ["process_beaco2n", "process_beaco2n_pipeline"]
+__all__ = ["process_beaco2n_pipeline"]
 
 
 pathType = Union[str, Path]
 
 
 def process_beaco2n_pipeline(filepaths: Dict, metadata: Dict) -> Dict[str, Dict]:
-    """ Process the scraped data that has been written to file. This expects a dictionary of the type
-    created by scrape_data_pipeline. 
+    """Process the scraped data that has been written to file. This expects a dictionary of the type
+    created by scrape_data_pipeline.
 
     Args:
         filepaths: Dictionary of scraped data filepaths, keyed by node id
@@ -67,4 +65,3 @@ def process_beaco2n_pipeline(filepaths: Dict, metadata: Dict) -> Dict[str, Dict]
             results[filename] = "No change to data"
 
     return results
-
