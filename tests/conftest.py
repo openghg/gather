@@ -6,11 +6,10 @@ import pytest
 from requests_mock import ANY
 from pathlib import Path
 
+sys.path.insert(0, "..")
 
 from gather.aqmesh import scrape_data as aqmesh_scraper
 from gather.beaco2n import scrape_data as beaco2n_scraper
-
-sys.path.insert(0, "..")
 
 
 def pytest_sessionstart(session):
