@@ -5,7 +5,7 @@ from traceback import format_exc
 import json
 import os
 
-from webscrape.handlers import crds_handler
+from gather.handlers import crds_handler
 
 
 async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:

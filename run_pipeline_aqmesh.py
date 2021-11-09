@@ -2,7 +2,7 @@
 
 """
 import argparse
-from webscrape.pipeline import run_aqmesh
+from gather.pipeline import run_aqmesh
 
 if __name__ == "__main__":
     example_text = """Usage:

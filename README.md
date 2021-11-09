@@ -1,7 +1,5 @@
 This repo contains scripts we use to scrape (with permission) data from different project's websites.
 
-
-
 # BEACO2N
 
 All BEACO2N data is provided by the [BEACO2N project](http://beacon.berkeley.edu/) at the University of Berkeley. Please make sure you get their permission before using any

@@ -1,9 +1,4 @@
 openghg @ git+https://github.com/openghg/openghg@devel#egg=openghg
+requests
 GitPython
-pytest
-pytest-cov
-requests-mock
-black
-flake8
-mypy==0.910
-types-requests
+tqdm
