@@ -5,6 +5,6 @@ runtime: docker
 memory: 2048
 timeout: 120
 triggers:
-- name: scrape
+- name: crds
   type: http
   source: /crds

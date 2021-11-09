@@ -15,4 +15,4 @@ async def handle_invocation(ctx: InvokeContext, data: BytesIO) -> Response:
     Returns:
         dict: Dictionary of return data
     """
-    return base_handler(ctx=ctx, data=data, function="picarro")
+    return base_handler(ctx=ctx, data=data, function="beaco2n")

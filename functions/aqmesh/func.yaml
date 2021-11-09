@@ -1,10 +1,10 @@
 schema_version: 20180708
-name: glasgow-picarro
-version: 0.0.13
+name: crds
+version: 0.0.1
 runtime: docker
 memory: 2048
 timeout: 120
 triggers:
-- name: glasgow-picarro
+- name: aqmesh
   type: http
-  source: /glasgow-picarro
+  source: /aqmesh

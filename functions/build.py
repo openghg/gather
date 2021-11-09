@@ -57,9 +57,9 @@ tag = args.tag
 
 # build the file
 base_cmd = f"docker build --tag openghg/pipeline-base:{tag} ."
-scrape_cmd = f"docker build --tag openghg/scrape-fn:{tag} ."
-picarro_cmd = f"docker build --tag openghg/picarro-fn:{tag} ."
-crds_cmd = f"docker build --tag openghg/crds-fn:{tag} ."
+
+# The functions we want to setup
+functions = ["aqmesh", "beaco2n", "picarro", "crds"]
 
 if args.nocache:
     base_cmd += " --no-cache"
@@ -67,21 +67,23 @@ if args.nocache:
 try:
     # Build the base image first
     subprocess.check_call(base_cmd.split(), cwd="./base_image")
-    subprocess.check_call(scrape_cmd.split(), cwd="./scrape")
-    subprocess.check_call(picarro_cmd.split(), cwd="./picarro")
-    subprocess.check_call(crds_cmd.split(), cwd="./crds")
+
+    for func in functions:
+        cmd = f"docker build --tag openghg/{func}-fn:{tag} ."
+        subprocess.check_call(cmd.split(), cwd="./{function}")
 
     print("\nDeploying Fn functions...\n")
 
     app_name = "openghg_pipeline"
-    # Make sure we have an app calld openghg
+
+    # Make sure we have an app called openghg
     subprocess.run(["fn", "create", "app", app_name])
 
     deploy_cmd = ["fn", "--verbose", "deploy", "--app", app_name, "--local"]
 
-    subprocess.check_call(deploy_cmd, cwd="./scrape")
-    subprocess.check_call(deploy_cmd, cwd="./picarro")
-    subprocess.check_call(deploy_cmd, cwd="./crds")
+    for func in functions:
+        subprocess.check_call(deploy_cmd, cwd=f"./{func}")
+
 except subprocess.CalledProcessError as e:
     print(f"Error - {str(e)}")
 finally:
