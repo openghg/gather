@@ -1,16 +1,57 @@
+import json
 from gather.pipeline import run_aqmesh
 from pathlib import Path
-from openghg.objectstore import get_local_bucket
+
+import gather.pipeline._aqmesh as _aqmesh_pipeline
 
 
-def test_aqmesh_pipeline(aqmesh_co2_intercept, tmpdir):
-    get_local_bucket(empty=True)
+def test_aqmesh_pipeline(monkeypatch, tmpdir):
+    def mock_scrape(species, download_path):
+        return {m: f"/tmp/this/{m}" for m in range(4)}
+
+    def mock_process(extracted_files):
+        sites = [f"glasgow_{n}" for n in range(4)]
+        spec = {"co2": "uuid-123"}
+        return {s: spec for s in sites}
+
+    def mock_export(species, selected_vars, sites):
+        return {
+            "network": {
+                "species": {
+                    "glasgow_1": {
+                        "data": {"2021-01-01": 432},
+                        "metadata": {"location": "glasgow"},
+                    }
+                }
+            }
+        }
+
+    monkeypatch.setattr(_aqmesh_pipeline, "scrape_data", mock_scrape)
+    monkeypatch.setattr(_aqmesh_pipeline, "process_pipeline", mock_process)
+    monkeypatch.setattr(_aqmesh_pipeline, "export_pipeline", mock_export)
 
     download_directory = Path(str(tmpdir))
 
     json_data = run_aqmesh(
         species="co2", selected_vars="co2", download_path=download_directory
     )
+
+    expected = {
+        "network": {
+            "species": {
+                "glasgow_1": {
+                    "data": {"2021-01-01": 432},
+                    "metadata": {"location": "glasgow"},
+                }
+            }
+        }
+    }
+
+    assert json_data == expected
+
+    print(json_data)
+
+    return
 
     expected = {
         "aqmesh_glasgow": {

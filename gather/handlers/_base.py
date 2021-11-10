@@ -37,28 +37,39 @@ def base_handler(ctx: InvokeContext, data: BytesIO, function: str) -> Response:
             raise KeyError("Invalid authorisation key.")
 
         # Get the pipeline function that will process the data
-        fn_to_call = getattr(pipeline, name=function)
-    except Exception:
+        fn_to_call = getattr(pipeline, function)
+    except Exception as e: 
         error_str = str(format_exc())
-        return Response(ctx=ctx, response_data=error_str)
+        error_header = {"function_setup_error": str(e)}
+        http_error_code = 500
+
+        ctx.SetResponseHeaders(headers=error_header, status_code=http_error_code)
+        return Response(ctx=ctx, response_data=error_str, status_code=http_error_code)
 
     run_success = True
 
+    result = {}
     try:
         raw_data = data.getvalue()
-        result = fn_to_call(data=raw_data)
+        processed_data = fn_to_call(data=raw_data)
         now_str = str(Timestamp.now())
         result[function] = f"{function} run success at - {now_str}"
-    except Exception:
+    except Exception as e:
         run_success = False
         error_str = str(format_exc())
         result[function] = f"Did not run - {error_str}"
+
+        error_header = {"function_process_error": str(e)}
+        http_error_code = 500
+
+        ctx.SetResponseHeaders(headers=error_header, status_code=http_error_code)
+        return Response(ctx=ctx, response_data=error_str, status_code=http_error_code)
 
     if run_success:
         repo_url = "github.com/openghg/dashboard_data"
         now_str = str(Timestamp.now())
         commit_msg = f"Automated commit of {function} data at {now_str}"
 
-        commit(repo_url=repo_url, processed_data=result, commit_msg=commit_msg)
+        git_commit(repo_url=repo_url, processed_data=processed_data, commit_msg=commit_msg)
 
     return Response(ctx=ctx, response_data=result)

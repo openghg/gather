@@ -1,7 +1,7 @@
 from pathlib import Path
 from gather.pipeline import run_beaco2n
+from gather.utils import parse_json
 from typing import Dict
-import json
 
 
 def beaco2n(args: bytes) -> Dict:
@@ -12,7 +12,7 @@ def beaco2n(args: bytes) -> Dict:
     Returns:
         dict: Dictionary of processed data
     """
-    args = json.loads(args)
+    args = parse_json(data=args)
 
     beaco2n_args = args["beaco2n"]
     selected_vars = beaco2n_args["selected_vars"]

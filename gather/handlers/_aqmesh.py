@@ -1,7 +1,7 @@
 from pathlib import Path
 from gather.pipeline import run_aqmesh
+from gather.utils import parse_json
 from typing import Dict
-import json
 
 
 def aqmesh(args: bytes) -> Dict:
@@ -12,7 +12,7 @@ def aqmesh(args: bytes) -> Dict:
     Returns:
         dict: Dictionary of processed data
     """
-    args = json.loads(args)
+    args = parse_json(data=args)
 
     aqmesh_args = args["aqmesh"]
     species = aqmesh_args["species"]
