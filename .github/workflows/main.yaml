@@ -56,7 +56,7 @@ jobs:
           OPENGHG_PATH: /tmp/openghg_store
           ACQUIRE_HOST: localhost
         run: |
-          pytest --cov=./ --cov-report=xml
+          pytest --cov=./ --cov-report=xml tests/
       - name: Upload coverage to Codecov
         run: |
           curl -s https://codecov.io/bash > codecov;

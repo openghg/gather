@@ -26,8 +26,8 @@ def test_beaco2n_pipeline(tmpdir, monkeypatch):
             }
         }
 
-    monkeypatch.setattr(_beaco2n_pipeline, "scrape_data", mock_scrape)
-    monkeypatch.setattr(_beaco2n_pipeline, "process_pipeline", mock_process)
+    monkeypatch.setattr(_beaco2n_pipeline, "scrape_data_pipeline", mock_scrape)
+    monkeypatch.setattr(_beaco2n_pipeline, "process_beaco2n_pipeline", mock_process)
     monkeypatch.setattr(_beaco2n_pipeline, "export_pipeline", mock_export)
 
     download_directory = Path(str(tmpdir))
